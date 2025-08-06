@@ -1,5 +1,5 @@
 
-from query_classification import need_rag_or_not
+from query_classification import *
 # Interagir avec l'assistant
 
 def ask_assistant(query):

@@ -1,17 +1,10 @@
 
 import streamlit as st
-import os, logging
-import json
-import base64
-from PIL import Image
-from typing import List, Dict, Any, Optional
-import pickle
+import logging
+from typing import Optional
 import numpy as np
-from PIL import Image
 
-import faiss
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from typing import Tuple
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 from langchain_mistralai.chat_models import ChatMistralAI
