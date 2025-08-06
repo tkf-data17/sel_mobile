@@ -1,0 +1,16 @@
+langchain
+langchain_mistralai
+langchain_together
+langchain_ollama
+langchain_community
+langchain-core
+langchain-huggingface
+chromadb
+sentence-transformers
+transformers
+torch>=2.2.2
+faiss-cpu
+pypdf
+beautifulsoup4
+streamlit==1.44.1
+mistralai==0.4.2
