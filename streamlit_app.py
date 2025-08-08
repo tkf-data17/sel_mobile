@@ -91,7 +91,43 @@ with st.sidebar:
         st.session_state.messages = []
         st.session_state.last_interaction_id = None
         st.rerun()  # Recharger l'application pour afficher la nouvelle conversation
+#------------------------------------------------------------
+#-----Bulles de selection des documents----------------------
+#-----------------------------------------------------------
+# Liste d'éléments
+elements = [f"Élément {i}" for i in range(1, 16)]
 
+st.sidebar.markdown("### Sélectionnez une bulle")
+
+# CSS pour les bulles
+st.sidebar.markdown("""
+    <style>
+    div[role="radiogroup"] > label {
+        display: inline-block;
+        padding: 6px 12px;
+        margin: 4px;
+        border-radius: 20px;
+        border: 1px solid #00796b;
+        background-color: #e0f7fa;
+        color: #00796b;
+        cursor: pointer;
+    }
+    div[role="radiogroup"] > label:hover {
+        background-color: #b2ebf2;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# Sélection unique
+selection = st.sidebar.radio(
+    label="",  # pas de label au-dessus
+    options=elements,
+    index=None
+)
+
+st.write("Élément sélectionné :", selection)
+
+#------------------------------------------------------------
 
 # --- HISTORIQUE ---
 if "messages" not in st.session_state:
