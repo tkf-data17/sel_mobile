@@ -94,38 +94,37 @@ with st.sidebar:
 #------------------------------------------------------------
 #-----Bulles de selection des documents----------------------
 #-----------------------------------------------------------
-# Liste d'éléments
-# Liste d'éléments
-elements = ["Passeport", "Casier judiciaire", "Nationalité", "Contrat zone Franche", "Duplicata Nationalité"]
 
-st.sidebar.markdown("### Sélectionnez une bulle")
+    # CSS pour styliser les bulles (radio)
+    st.markdown("""
+        <style>
+        div[role="radiogroup"] > label {
+            display: inline-block;
+            padding: 6px 12px;
+            margin: 4px;
+            border-radius: 20px;
+            border: 1px solid #00796b;
+            background-color: #e0f7fa;
+            color: #00796b;
+            cursor: pointer;
+        }
+        div[role="radiogroup"] > label:hover {
+            background-color: #b2ebf2;
+        }
+        </style>
+    """, unsafe_allow_html=True)
 
-# CSS pour styliser les boutons radio en bulles
-st.sidebar.markdown("""
-    <style>
-    div[role="radiogroup"] > label {
-        display: inline-block;
-        padding: 6px 12px;
-        margin: 4px;
-        border-radius: 20px;
-        border: 1px solid #00796b;
-        background-color: #e0f7fa;
-        color: #00796b;
-        cursor: pointer;
-    }
-    div[role="radiogroup"] > label:hover {
-        background-color: #b2ebf2;
-    }
-    </style>
-""", unsafe_allow_html=True)
+    # Liste des éléments
+    elements = ["Passeport", "Casier judiciaire", "Nationalité", "Contrat zone Franche", "Duplicata Nationalité"]
 
-# Sélection unique
-selection = st.sidebar.radio(
-    label="",  # pas de label texte
-    options=elements,
-    index=None
-)
+    # Sélection unique (radio)
+    selection = st.radio(
+        label="",  # pas de label texte
+        options=elements,
+        index=None
+    )
 
+# --- Utilisation dans le reste de l'app ---
 st.write("Élément sélectionné :", selection)
 
 #------------------------------------------------------------
