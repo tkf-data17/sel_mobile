@@ -95,11 +95,12 @@ with st.sidebar:
 #-----Bulles de selection des documents----------------------
 #-----------------------------------------------------------
 # Liste d'éléments
-elements = [f"Élément {i}" for i in range(1, 16)]
+# Liste d'éléments
+elements = ["Passeport", "Casier judiciaire", "Nationalité", "Contrat zone Franche", "Duplicata Nationalité"]
 
 st.sidebar.markdown("### Sélectionnez une bulle")
 
-# CSS pour les bulles
+# CSS pour styliser les boutons radio en bulles
 st.sidebar.markdown("""
     <style>
     div[role="radiogroup"] > label {
@@ -120,7 +121,7 @@ st.sidebar.markdown("""
 
 # Sélection unique
 selection = st.sidebar.radio(
-    label="",  # pas de label au-dessus
+    label="",  # pas de label texte
     options=elements,
     index=None
 )
