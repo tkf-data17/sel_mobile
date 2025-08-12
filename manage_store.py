@@ -30,7 +30,6 @@ def _generate_embeddings(chunks: List[Dict[str, any]], mistral_client) -> Option
             batch_num = (i // EMBEDDING_BATCH_SIZE) + 1
             batch_chunks = chunks[i:i + EMBEDDING_BATCH_SIZE]
             texts_to_embed = [chunk["text"] for chunk in batch_chunks]
-
             # logging.info(f"  Traitement du lot {batch_num}/{total_batches} ({len(texts_to_embed)} chunks)")
             try:
                 response = mistral_client.embeddings(
@@ -72,7 +71,6 @@ def build_index(ALL_CHUNKS_PATH):
       # 3. Créer l'index Faiss optimisé pour la similarité cosinus
       dimension = embeddings.shape[1]
       logging.info(f"Création de l'index Faiss optimisé pour la similarité cosinus avec dimension {dimension}...")
-
       # Normaliser les embeddings pour la similarité cosinus
       faiss.normalize_L2(embeddings)
 

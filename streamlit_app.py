@@ -114,18 +114,18 @@ with st.sidebar:
         </style>
     """, unsafe_allow_html=True)
 
-    # Liste des éléments
-    elements = ["Passeport", "Casier judiciaire", "Nationalité", "Contrat zone Franche", "Duplicata Nationalité"]
+#     # Liste des éléments
+#     elements = ["Passeport", "Casier judiciaire", "Nationalité", "Contrat zone Franche", "Duplicata Nationalité"]
 
-    # Sélection unique (radio)
-    selection = st.radio(
-        label="",  # pas de label texte
-        options=elements,
-        index=None
-    )
+#     # Sélection unique (radio)
+#     selection = st.radio(
+#         label="",  # pas de label texte
+#         options=elements,
+#         index=None
+#     )
 
-# --- Utilisation dans le reste de l'app ---
-st.write("Élément sélectionné :", selection)
+# # --- Utilisation dans le reste de l'app ---
+# st.write("Élément sélectionné :", selection)
 
 #------------------------------------------------------------
 
