@@ -94,26 +94,44 @@ with st.sidebar:
 #------------------------------------------------------------
 #-----Bulles de selection des documents----------------------
 #-----------------------------------------------------------
+# Liste d'éléments
+# Liste d'éléments
+elements = ["Passeport", "Casier judiciaire", "Nationalité", "Contrat zone Franche", "Duplicata Nationalité"]
 
-    # CSS pour styliser les bulles (radio)
-    st.markdown("""
-        <style>
-        div[role="radiogroup"] > label {
-            display: inline-block;
-            padding: 6px 12px;
-            margin: 4px;
-            border-radius: 20px;
-            border: 1px solid #00796b;
-            background-color: #e0f7fa;
-            color: #00796b;
-            cursor: pointer;
-        }
-        div[role="radiogroup"] > label:hover {
-            background-color: #b2ebf2;
-        }
-        </style>
-    """, unsafe_allow_html=True)
+st.sidebar.markdown("### Sélectionnez une bulle")
 
+<<<<<<< HEAD
+=======
+# CSS pour styliser les boutons radio en bulles
+st.sidebar.markdown("""
+    <style>
+    div[role="radiogroup"] > label {
+        display: inline-block;
+        padding: 6px 12px;
+        margin: 4px;
+        border-radius: 20px;
+        border: 1px solid #00796b;
+        background-color: #e0f7fa;
+        color: #00796b;
+        cursor: pointer;
+    }
+    div[role="radiogroup"] > label:hover {
+        background-color: #b2ebf2;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# Sélection unique
+selection = st.sidebar.radio(
+    label="",  # pas de label texte
+    options=elements,
+    index=None
+)
+
+st.write("Élément sélectionné :", selection)
+
+#------------------------------------------------------------
+>>>>>>> parent of c4b2b3a (mise a jour bulle de selection)
 
 # --- HISTORIQUE ---
 if "messages" not in st.session_state:

@@ -1,5 +1,8 @@
 
 from bs4 import BeautifulSoup as bs
+import json
+import os
+import sys
 import pandas as pd
 from requests import get
 from urllib.parse import urljoin
@@ -7,25 +10,31 @@ from urllib.parse import urljoin
 # recuperation des données sur la page principale
 
 top_url = "https://service-public.gouv.tg/service-online"
-resp = get(top_url)
-soup = bs(resp.content, "html.parser")
+def collect_data_list():
+    # Faire une requête GET pour récupérer le contenu de la page
+    print(f"Collecte des données depuis {top_url}...")
+        # Utiliser requests pour obtenir le contenu de la page
+    resp = get(top_url)
+    soup = bs(resp.content, "html.parser")
 
-# recupération de toute les catégories de services en ligne
-categories = soup.find_all("div", class_="d-flex pb-2")
+    # recupération de toute les catégories de services en ligne
+    categories = soup.find_all("div", class_="d-flex pb-2")
 
-# recuperation de tous les liens du site et les noms de chaque rubrique
+    # recuperation de tous les liens du site et les noms de chaque rubrique
 
-data_links = []
-title_list = []
-for categorie in categories:
-    try:
-        relative_path = categorie.find("a", class_="primary-link")["href"]    # recuperation des lien relatives de chaque rubriques
-        title = categorie.find("a", class_="primary-link").text               # recuperation des titres des rubriques
-        absolute_path = urljoin(top_url, relative_path)
-        data_links.append(absolute_path)
-        title_list.append(title)
-    except:
-        pass
+    data_links = []
+    title_list = []
+    for categorie in categories:
+        try:
+            relative_path = categorie.find("a", class_="primary-link")["href"]    # recuperation des lien relatives de chaque rubriques
+            title = categorie.find("a", class_="primary-link").text               # recuperation des titres des rubriques
+            absolute_path = urljoin(top_url, relative_path)
+            data_links.append(absolute_path)
+            title_list.append(title)
+        except:
+            pass
+
+    return data_links, title_list
 
 
 # collecte de toutes les informations relatives a chaque rubrique
@@ -95,6 +104,7 @@ def buil_documents_from_links(data_links, title_list):
 
     # Affichage (facultatif) pour validation
     print(f"{len(documents)} documents collectés.")
+    return documents
 
 
 # Faire le nettoyage et le chunking
@@ -141,20 +151,33 @@ def _split_documents_and_chunks(documents):
       all_chunks.append(chunk_dict)
     doc_counter += 1
 
-  logging.info(f"Total de {len(all_chunks)} chunks créés.")
+#   logging.info(f"Total de {len(all_chunks)} chunks créés.")
   return all_chunks
 
 
 def save_all_chunks(all_chunks):
 
   # Nom du fichier de sortie
-  output_file_json = "/content/drive/MyDrive/projet_formation_DSI/save_chunks/chunks_save.json"
+  output_file_json = "save_chunks/chunks_save.json"
 
   # Ouvrir le fichier en mode écriture ('w') avec encodage UTF-8
   # Utiliser json.dump pour écrire la liste de dictionnaires
   with open(output_file_json, "w", encoding="utf-8") as f:
       # indent=4 rend le fichier JSON lisible par un humain (indentation de 4 espaces)
       # ensure_ascii=False permet de sauvegarder les caractères non-ASCII (comme les accents) directement
-      json.dump(chunks, f, indent=4, ensure_ascii=False)
+      json.dump(all_chunks, f, indent=4, ensure_ascii=False)
 
   print(f"Vos chunks (dictionnaires) ont été sauvegardés avec succès dans le fichier : '{output_file_json}'")
+
+
+def collect_data():
+   data_list, title_list = collect_data_list()
+   documents = buil_documents_from_links(data_list, title_list)
+   all_chunks = _split_documents_and_chunks(documents)
+   save_all_chunks(all_chunks)
+   print("Collecte de données terminée.")
+   return data_list, title_list
+
+if __name__ == "__main__":
+    # Exécuter la collecte de données
+    collect_data()
