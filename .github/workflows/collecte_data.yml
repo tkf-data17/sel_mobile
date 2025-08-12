@@ -24,12 +24,12 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run scraper
-        run: python scraper.py
+        run: python collecte_data.py
 
       - name: Commit and push changes
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "tkf-data17"
+          git config --global user.email "tayif01@gmail.com"
           git add .
           git commit -m "Mise à jour automatique des données : $(date '+%Y-%m-%d %H:%M:%S')" || echo "Aucun changement"
           git push
