@@ -52,7 +52,7 @@ def get_mistral_client():
         st.error("Erreur: La clé API Mistral (MISTRAL_API_KEY) n'est pas configurée.")
         st.stop()
     logging.info("Initialisation du client Mistral...")
-    return MistralClient(api_key="CIdDE3JaJFJRKOXmGdcRCEDGUWr6wkTK")
+    return MistralClient(api_key=MISTRAL_API_KEY)
 
 chunks_recharges = load_chunks()
 mistral_client = get_mistral_client()
@@ -77,7 +77,7 @@ st.write("")
 st.caption(f"Posez vos questions sur les procedures d'obtentions des documents administratifs")
 
 #----------------------------------------------------------
-
+# Creation de la sidebar pour l'assistant virtuel
 #-----------------------------------------------------------
 
 # Barre latérale (sidebar)
@@ -91,14 +91,6 @@ with st.sidebar:
         st.session_state.messages = []
         st.session_state.last_interaction_id = None
         st.rerun()  # Recharger l'application pour afficher la nouvelle conversation
-#------------------------------------------------------------
-#-----Bulles de selection des documents----------------------
-#-----------------------------------------------------------
-# Liste d'éléments
-# Liste d'éléments
-elements = ["Passeport", "Casier judiciaire", "Nationalité", "Contrat zone Franche", "Duplicata Nationalité"]
-
-st.sidebar.markdown("### Sélectionnez une bulle")
 
 
 # --- HISTORIQUE ---
