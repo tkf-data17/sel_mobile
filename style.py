@@ -87,7 +87,7 @@ body {{
     padding-left: 100%;
     animation: scroll-left 50s linear infinite;
     font-size: 16px;
-    color: darkblue;
+    color: yellow;
     font-weight: bold;
     line-height: 30px;
 }}
