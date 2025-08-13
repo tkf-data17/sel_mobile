@@ -93,17 +93,48 @@ Réponse: DIRECT - Question générale de connaissance
 # FONCTION POUR AMELIORER LA QUESTION DE L'UTILISATEUR
 #-----------------------------------------------------------------------------------------------------------
 
-def powered_query(query, historique):
-        """
-        Utilise le LLM pour reformuler la requête en ajoutant l'historique des questions précédentes.
+def rewrite_question(user_question: str, conversation_history: List[Dict], max_history_entries: int = 6) -> str:
+    """
+    Reformule la 'user_question' de manière autonome en tenant compte de l'historique.
+    conversation_history : liste d'entrées {"role":"user"/"assistant", "content": "..."}
+    On limite l'historique pour rester dans les tokens.
+    """
+    # Construire un historique textuel limité (les dernières N échanges)
+    recent = conversation_history[-max_history_entries * 2 :] if conversation_history else []
+    hist_text = ""
+    for item in recent:
+        role = item.get("role", "")
+        content = item.get("content", "")
+        hist_text += f"{role.upper()}: {content}\n"
 
-        Args:
-            query: Requête de l'utilisateur, historique: historique des questions précédentes
+    system_prompt = (
+        f"""Vous êtes un assistant de réécriture de requêtes. Votre tâche est de prendre un historique de conversation et la dernière question de l'utilisateur 
+        pour générer une nouvelle question unique qui capture toute l'intention et le contexte. La nouvelle question doit être une requête autonome, claire, précise et ne pas faire référence à la conversation.
+        Reformule la question finale obligatoirement en français de façon autonome 
+        afin qu'elle soit compréhensible hors-contexte (sans dépendre des pronoms ou 
+        références implicites). Réponds uniquement par la question reformulée, rien d'autre.\n
+        Si la question est déjà autonome, la renvoyer telle quelle.
+        Historique de la conversation (derniers échanges):
+        {hist_text}
+        Question à reformuler: {user_question}
+        "Réécris la question:"""
+    )
+    messages = [
+        ChatMessage(role="system", content=system_prompt),
+        ChatMessage(role="user", content=user_question) # Add the user's question as a user message
+        ]
+    try:
+        resp = mistral_client.chat(model=LLM_MODEL, messages=messages, temperature=0.0, max_tokens=128)
+        rewritten = resp.choices[0].message.content.strip()
+        # Par sécurité, si la sortie est vide, retourner la question d'origine
+        if not rewritten:
+            return user_question
+        return rewritten
+    except Exception as e:
+        logging.error("Erreur rewrite_question: %s", e)
+        return user_question
 
-        Returns:
-            Tuple (query_powered)
-        """
-        pass
+
 
 
 #-----------------------------------------------------------------------------------------------------------
