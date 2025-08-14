@@ -114,8 +114,7 @@ for message in st.session_state.messages:
 
 # --- CHAT INPUT ---
 if query := st.chat_input("Posez votre question ici..."):
-    # reformuler la question
-    rewrited_query = rewrite_question(query, st.session_state.messages)
+
     # ajouter la question reformulée à l'historique
     st.session_state.messages.append({"role": "user", "content": query})
     with st.chat_message("user"):
@@ -132,7 +131,9 @@ if query := st.chat_input("Posez votre question ici..."):
 
             if needs_rag:
                 logging.info(f"Mode RAG - Recherche de documents pour la question: {query}")
-
+                # reformuler la question
+                rewrited_query = rewrite_question(query, st.session_state.messages)
+                # recherche de documents
                 retrieved_docs = search(query, min_score=0.75)
                   # Préparer le contexte pour le LLM
                 context_str = "\n\n---\n\n".join([
