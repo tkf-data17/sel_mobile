@@ -95,7 +95,7 @@ Réponse: DIRECT - Question générale de connaissance
 
 def rewrite_question(user_question: str, conversation_history: List[Dict], max_history_entries: int = 6) -> str:
     """
-    Reformule la 'user_question' de manière autonome en tenant compte de l'historique.
+    Reformule la `user_question` de manière autonome en tenant compte de l'historique.
     conversation_history : liste d'entrées {"role":"user"/"assistant", "content": "..."}
     On limite l'historique pour rester dans les tokens.
     """
@@ -108,23 +108,28 @@ def rewrite_question(user_question: str, conversation_history: List[Dict], max_h
         hist_text += f"{role.upper()}: {content}\n"
 
     system_prompt = (
-        f"""Vous êtes un assistant de réécriture de requêtes. Votre tâche est de prendre un historique de conversation et la dernière question de l'utilisateur 
+        f"""Vous êtes un assistant de réécriture de requêtes. Votre tâche est de prendre l'historique de conversation et la dernière question de l'utilisateur
         pour générer une nouvelle question unique qui capture toute l'intention et le contexte. La nouvelle question doit être une requête autonome, claire, précise et ne pas faire référence à la conversation.
-        Reformule la question finale obligatoirement en français de façon autonome 
-        afin qu'elle soit compréhensible hors-contexte (sans dépendre des pronoms ou 
-        références implicites). Réponds uniquement par la question reformulée, rien d'autre.\n
-        Si la question est déjà autonome, la renvoyer telle quelle.
+        Reformule la question finale de façon autonome
+        afin qu'elle soit compréhensible hors-contexte (sans dépendre des pronoms ou
+        références implicites).
+        *** Regles importantes ***
+        - Réponds uniquement par la question reformulée, n'ajoute rien d'autre, pas d'information superflux provenant de tes données personnelles;
+        - Si la question est déjà autonome, la renvoyer telle quelle;
+        - La reponse doit etre OBLIGATOIREMENT EN FRANçAIS, concise et precise.
+
+        Réécris la question:
         Historique de la conversation (derniers échanges):
         {hist_text}
         Question à reformuler: {user_question}
-        "Réécris la question:"""
+        """
     )
     messages = [
         ChatMessage(role="system", content=system_prompt),
         ChatMessage(role="user", content=user_question) # Add the user's question as a user message
         ]
     try:
-        resp = mistral_client.chat(model=LLM_MODEL, messages=messages, temperature=0.0, max_tokens=128)
+        resp = mistral_client.chat(model="mistral-large", messages=messages, temperature=0.0, max_tokens=128)
         rewritten = resp.choices[0].message.content.strip()
         # Par sécurité, si la sortie est vide, retourner la question d'origine
         if not rewritten:

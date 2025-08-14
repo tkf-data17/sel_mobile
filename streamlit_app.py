@@ -13,7 +13,7 @@ from mistralai.models.chat_completion import ChatMessage
 
 from config import MISTRAL_API_KEY, ALL_CHUNKS_PATH
 from manage_store import load_all_chunks, build_index, search, _generate_embeddings
-from query_classification import classify_with_llm
+from query_classification import classify_with_llm, rewrite_question
 from style import HEADER_STYLE
 
 
@@ -114,6 +114,9 @@ for message in st.session_state.messages:
 
 # --- CHAT INPUT ---
 if query := st.chat_input("Posez votre question ici..."):
+    # reformuler la question
+    query = rewrite_question(query, st.session_state.messages)
+    # ajouter la question reformulée à l'historique
     st.session_state.messages.append({"role": "user", "content": query})
     with st.chat_message("user"):
         st.markdown(query)
@@ -150,7 +153,7 @@ if query := st.chat_input("Posez votre question ici..."):
         - Répondez obligatoirement en français
         - si l'utilisateur pose une question sans donner la precision sur le documents recherché, dit lui de preciser le document recherché.
           Exemple:
-          user: combien je dois payer?
+          user: combien?
           system: veuillez reformuler votre question en precisant le type de documents que vous recherchez.
         - Répondez uniquement avec les informations présentes dans les documents fournis
         - Si l'information n'est pas dans les documents, dites : "Je n'ai pas cette information dans ma base de données."
