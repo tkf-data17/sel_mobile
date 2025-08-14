@@ -129,7 +129,7 @@ def rewrite_question(user_question: str, conversation_history: List[Dict], max_h
         ChatMessage(role="user", content=user_question) # Add the user's question as a user message
         ]
     try:
-        resp = mistral_client.chat(model="mistral-large", messages=messages, temperature=0.0, max_tokens=128)
+        resp = mistral_client.chat(model=LLM_MODEL, messages=messages, temperature=0.0, max_tokens=128)
         rewritten = resp.choices[0].message.content.strip()
         # Par sécurité, si la sortie est vide, retourner la question d'origine
         if not rewritten:
