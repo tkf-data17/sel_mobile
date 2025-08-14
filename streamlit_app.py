@@ -115,7 +115,7 @@ for message in st.session_state.messages:
 # --- CHAT INPUT ---
 if query := st.chat_input("Posez votre question ici..."):
     # reformuler la question
-    #rewrited_query = rewrite_question(query, st.session_state.messages)
+    rewrited_query = rewrite_question(query, st.session_state.messages)
     # ajouter la question reformulée à l'historique
     st.session_state.messages.append({"role": "user", "content": query})
     with st.chat_message("user"):
