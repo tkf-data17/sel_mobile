@@ -192,6 +192,7 @@ if query := st.chat_input("Posez votre question ici..."):
                 # max_tokens=1024
             )
             result = chat_response.choices[0].message.content
+            rewrited_query = ""
 
             st.markdown(
           f"""
