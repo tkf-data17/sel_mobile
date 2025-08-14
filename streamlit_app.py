@@ -169,7 +169,9 @@ if query := st.chat_input("Posez votre question ici..."):
 
             else:
                 logging.info(f"Mode direct - Réponse basée sur les connaissances générales du modèle")
-
+                # pas de reformulation de question
+                rewrited_query = ""
+                
                 system_prompt = """Votre nom est SEL, vous êtes un assistant virtuel pour le service en ligne du gouvernement togolais.
 
         Répondez à la question de l'utilisateur en utilisant vos connaissances générales.
@@ -192,7 +194,7 @@ if query := st.chat_input("Posez votre question ici..."):
                 # max_tokens=1024
             )
             result = chat_response.choices[0].message.content
-            rewrited_query = ""
+            
 
             st.markdown(
           f"""
