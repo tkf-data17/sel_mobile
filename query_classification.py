@@ -1,6 +1,6 @@
 
 import logging
-from typing import Tuple
+from typing import Tuple, Dict, List
 from config import *
 from manage_store import search
 from mistralai.client import MistralClient
