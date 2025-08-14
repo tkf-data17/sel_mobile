@@ -114,6 +114,8 @@ def rewrite_question(user_question: str, conversation_history: List[Dict], max_h
         afin qu'elle soit compréhensible hors-contexte (sans dépendre des pronoms ou
         références implicites).
         *** Regles importantes ***
+        - si l'historique est vide, retourne la question exactement comme elle est;
+        - si la question ne fournit pas suffisamment de contexte, demande des précisions à l'utilisateur;
         - Réponds uniquement par la question reformulée, n'ajoute rien d'autre, pas d'information superflux provenant de tes données personnelles;
         - Si la question est déjà autonome, la renvoyer telle quelle;
         - La reponse doit etre OBLIGATOIREMENT EN FRANçAIS, concise et precise.
