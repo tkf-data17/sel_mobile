@@ -132,9 +132,9 @@ if query := st.chat_input("Posez votre question ici..."):
             if needs_rag:
                 logging.info(f"Mode RAG - Recherche de documents pour la question: {query}")
                 # reformuler la question
-                query = rewrite_question(query, st.session_state.messages)
+                rewrited_query = rewrite_question(query, st.session_state.messages)
                 # recherche de documents
-                retrieved_docs = search(query, min_score=0.75)
+                retrieved_docs = search(rewrited_query, min_score=0.75)
                   # Préparer le contexte pour le LLM
                 context_str = "\n\n---\n\n".join([
                     f"Source: {doc['metadata'].get('source', 'Inconnue')} (Score: {doc['score']:.4f})\nContenu: {doc['text']}"
@@ -170,7 +170,7 @@ if query := st.chat_input("Posez votre question ici..."):
             else:
                 logging.info(f"Mode direct - Réponse basée sur les connaissances générales du modèle")
                 # pas de reformulation de question
-            
+                rewrited_query = query
                 
                 system_prompt = """Votre nom est SEL, vous êtes un assistant virtuel pour le service en ligne du gouvernement togolais.
 
@@ -181,7 +181,7 @@ if query := st.chat_input("Posez votre question ici..."):
         N'inventez pas d'informations sur le gouvernement togolais.
         """
 
-            user_message = ChatMessage(role="user", content=query)
+            user_message = ChatMessage(role="user", content=rewrited_query)
             system_message = ChatMessage(role="system", content=system_prompt)
             messages_for_api = [system_message, user_message]
 
