@@ -214,7 +214,7 @@ if query := st.chat_input("Posez votre question ici..."):
           """,
           unsafe_allow_html=True
           )
-            st.markdown(rewrited_query)
+
             # Ajouter la réponse de l'assistant à l'historique pour affichage permanent
             st.session_state.messages.append({
                 "role": "assistant",
