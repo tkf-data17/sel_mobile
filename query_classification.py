@@ -5,7 +5,7 @@ from config import *
 from manage_store import search
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
-import openai
+from openai import OpenAI
 
 # FONCTION POUR UNE CLASSIFICATION DES REQUETES
 
@@ -94,7 +94,8 @@ Réponse: DIRECT - Question générale de connaissance
 # FONCTION POUR AMELIORER LA QUESTION DE L'UTILISATEUR
 #-----------------------------------------------------------------------------------------------------------
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 def rewrite_question(user_question: str, conversation_history: List[Dict], max_history_entries: int = 6) -> str:
     """
@@ -134,7 +135,7 @@ def rewrite_question(user_question: str, conversation_history: List[Dict], max_h
         ChatMessage(role="user", content=user_question) # Add the user's question as a user message
         ]
     try:
-        resp = openai.ChatCompletion.create(
+        resp = client.chat.completions.create(
             model="gpt-3.5-turbo",  # ou "gpt-4" si tu as accès
             messages=messages,
             temperature=0.0,
