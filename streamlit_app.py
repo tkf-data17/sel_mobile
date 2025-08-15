@@ -132,7 +132,7 @@ if query := st.chat_input("Posez votre question ici..."):
             if needs_rag:
                 logging.info(f"Mode RAG - Recherche de documents pour la question: {query}")
                 # reformuler la question
-                rewrited_query = rewrite_question(query, st.session_state.messages)
+                query = rewrite_question(query, st.session_state.messages)
                 # recherche de documents
                 retrieved_docs = search(query, min_score=0.75)
                   # Préparer le contexte pour le LLM
@@ -170,7 +170,7 @@ if query := st.chat_input("Posez votre question ici..."):
             else:
                 logging.info(f"Mode direct - Réponse basée sur les connaissances générales du modèle")
                 # pas de reformulation de question
-                rewrited_query = ""
+            
                 
                 system_prompt = """Votre nom est SEL, vous êtes un assistant virtuel pour le service en ligne du gouvernement togolais.
 
@@ -214,7 +214,7 @@ if query := st.chat_input("Posez votre question ici..."):
           """,
           unsafe_allow_html=True
           )
-            st.markdown(rewrited_query)
+            st.markdown(query)
             # Ajouter la réponse de l'assistant à l'historique pour affichage permanent
             st.session_state.messages.append({
                 "role": "assistant",
