@@ -5,7 +5,7 @@ from config import *
 from manage_store import search
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
-from openai import OpenAI
+from google import genai
 
 # FONCTION POUR UNE CLASSIFICATION DES REQUETES
 
@@ -94,8 +94,6 @@ Réponse: DIRECT - Question générale de connaissance
 # FONCTION POUR AMELIORER LA QUESTION DE L'UTILISATEUR
 #-----------------------------------------------------------------------------------------------------------
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-client = OpenAI(api_key=OPENAI_API_KEY)
 
 def rewrite_question(user_question: str, conversation_history: List[Dict], max_history_entries: int = 6) -> str:
     """
@@ -130,18 +128,13 @@ def rewrite_question(user_question: str, conversation_history: List[Dict], max_h
         Question à reformuler: {user_question}
         """
     )
-    messages = [
-        ChatMessage(role="system", content=system_prompt),
-        ChatMessage(role="user", content=user_question) # Add the user's question as a user message
-        ]
     try:
-        resp = client.chat.completions.create(
-            model="gpt-3.5-turbo",  # ou "gpt-4" si tu as accès
-            messages=messages,
-            temperature=0.0,
-            max_tokens=128
+        client = genai.Client(api_key=GEMINI_API_KEY)
+        resp = client.models.generate_content(
+            model="gemini-2.5-flash",  # Remplace par le modèle souhaité
+            contents=system_prompt
         )
-        rewritten = resp.choices[0].message.content.strip()
+        rewritten = resp.text.strip()
         # Par sécurité, si la sortie est vide, retourner la question d'origine
         if not rewritten:
             return user_question

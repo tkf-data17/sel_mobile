@@ -14,6 +14,8 @@ EMBEDDING_MODEL    = "mistral-embed"
 EMBEDDING_BATCH_SIZE = 32
 LLM_MODEL = "mistral-small"
 IMAGE_PATH = "Armoiries_du_Togo.png"
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
 
 def get_mistral_client():
     if not MISTRAL_API_KEY:
