@@ -22,9 +22,6 @@ st.set_page_config(
 )
 
 
-st.markdown(CHAT_STYLE, unsafe_allow_html=True)
-
-
 @st.cache_data
 def load_chunks():
   # Lire le fichier JSON et charger les données
@@ -71,6 +68,8 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+st.markdown(CHAT_STYLE, unsafe_allow_html=True)
+
 #-------------------------------------------------------------------------------------------------------
 
 # --- Interface Utilisateur ---
@@ -104,7 +103,7 @@ if "messages" not in st.session_state:
 # Affichage de l'historique du chat
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+        # st.markdown(message["content"])
         # Récupération du rôle et du contenu du message
         role = message["role"]
         content = message["content"]
@@ -207,24 +206,24 @@ if query := st.chat_input("Posez votre question ici..."):
             result = chat_response.choices[0].message.content
             
 
-            st.markdown(
-          f"""
-          <div style='
-              max-width: 800px;
-              margin: 0 auto;
-              padding: 20px;
-              background-color: #f9f9f9;
-              border: 1px solid #ddd;
-              border-radius: 8px;
-              overflow-wrap: break-word;
-              overflow-x: auto;
-              font-size: 16px;
-              color: #333;'>
-              {result}
-          </div>
-          """,
-          unsafe_allow_html=True
-          )
+        #     st.markdown(
+        #   f"""
+        #   <div style='
+        #       max-width: 800px;
+        #       margin: 0 auto;
+        #       padding: 20px;
+        #       background-color: #f9f9f9;
+        #       border: 1px solid #ddd;
+        #       border-radius: 8px;
+        #       overflow-wrap: break-word;
+        #       overflow-x: auto;
+        #       font-size: 16px;
+        #       color: #333;'>
+        #       {result}
+        #   </div>
+        #   """,
+        #   unsafe_allow_html=True
+        #   )
 
             # Ajouter la réponse de l'assistant à l'historique pour affichage permanent
             st.session_state.messages.append({
