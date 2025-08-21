@@ -1,11 +1,10 @@
 # import streamlit as st
 import os
 import base64
-from config import*
 
 
 # --- 2. Chemin et vérification de l'image ---
-image_file_name = "ressources/Armoiries_du_Togo.png"
+image_file_name = "ressources\Armoiries_du_Togo.png"
 
 if not os.path.exists(image_file_name):
     # st.error(f"Erreur : Le fichier image '{image_file_name}' n'a pas été trouvé. Assurez-vous qu'il est dans le même répertoire que votre script Streamlit.")
@@ -34,7 +33,14 @@ body {{
 
 /* Contenu principal décalé pour le header fixe */
 main[data-testid="stAppViewContainer"] {{
+    background-color: red;  /* noir clair */
+    color: white;  
     padding-top: 120px;  /* même hauteur que ton header */
+}}
+
+/* Cache complètement l'entête par défaut de Streamlit */
+header[data-testid="stHeader"] {{
+    display: none;
 }}
 
 /* Conteneur principal de l’en-tête */
@@ -47,9 +53,9 @@ main[data-testid="stAppViewContainer"] {{
     width: 100%;
     border-bottom: 1px solid #ccc;
     z-index: 9999;
-    background-color: white;
+    background-color: #FFD700; /* Jaune clair */
     color: black;
-    padding: 20px;
+    padding: 10px;
     box-sizing: border-box;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     display: flex;
@@ -61,6 +67,7 @@ main[data-testid="stAppViewContainer"] {{
 .header-top {{
     display: flex;
     align-items: center;
+    margin-top: 10;
     margin-bottom: 10px;
 }}
 
@@ -81,7 +88,7 @@ main[data-testid="stAppViewContainer"] {{
     width: 100%;
     overflow: hidden;
     height: 24px;
-    background-color: #f0f0f0;
+    background-color: #FFD70020; /* Jaune clair avec transparence */
 }}
 
 .marquee-text {{
@@ -90,7 +97,7 @@ main[data-testid="stAppViewContainer"] {{
     padding-left: 100%;
     animation: scroll-left 40s linear infinite;
     font-size: 14px;
-    color: darkblue;
+    color: black;
     font-weight: bold;
     line-height: 24px;
 }}
@@ -102,7 +109,7 @@ main[data-testid="stAppViewContainer"] {{
 
 /* Décalage du contenu principal */
 .block-container {{
-    padding-top: 0px;
+    padding-top: 120px;
     margin-top: 0px;    /*utilisation de l'espace */
 }}
 
@@ -173,14 +180,16 @@ CHAT_STYLE = f"""
 
 /* Messages utilisateur */
 .user-bubble {{
-    background-color: #00800020;  /* Vert léger */
+    background-color: green;  /* Vert léger */
+    color: white;
     margin-left: auto;            /* Aligne à droite */
     text-align: right;
 }}
 
 /* Messages assistant */
 .bot-bubble {{
-    background-color: #FFD70020;  /* Jaune clair */
+    background-color: #FFD700;
+    color: black;
     margin-right: auto;           /* Aligne à gauche */
     text-align: left;
 }}
@@ -194,3 +203,6 @@ CHAT_STYLE = f"""
 }}
 </style>
 """
+
+
+
