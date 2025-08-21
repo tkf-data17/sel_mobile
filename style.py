@@ -97,16 +97,18 @@ body {{
 
 /* Décalage du contenu principal */
 .block-container {{
-    padding-top: 120px;
+    padding-top: 0px;
+    margin-top: 0px;    /*utilisation de l'espace */
 }}
-
 
 /* 📱 Version mobile */
 @media (max-width: 768px) {{
     .fixed-header {{
-        padding: 10px 15px;
+        width: 95%;
+        padding: 10px;
         align-items: center;
         text-align: center;
+        margin: 0 auto;
     }}
     .header-top {{
         flex-direction: column;
@@ -123,6 +125,10 @@ body {{
     }}
     .block-container {{
         padding-top: 100px;
+    }}
+    .chat-bubble {{
+        max-width: 95%;
+        font-size: 16px;
     }}
 }}
 
