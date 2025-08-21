@@ -215,6 +215,24 @@ if query := st.chat_input("Posez votre question ici..."):
             "role": "assistant",
             "content": result
         })
+
+        # Affichage avec option de copie
+        for message in st.session_state.messages[-1:]:  # juste le dernier message
+            if message["role"] == "assistant":
+                # Container pour la bulle + bouton
+                with st.container():
+                    # Affichage de la bulle
+                    st.markdown(
+                        f"<div class='chat-bubble bot-bubble'>{message['content']}</div>",
+                        unsafe_allow_html=True
+                    )
+                    # Bouton pour copier
+                    copy_key = f"copy_{len(st.session_state.messages)}"
+                    if st.button("📋 Copier", key=copy_key):
+                        st.experimental_set_clipboard(message["content"])
+                        st.success("✅ Copié dans le presse-papiers !")
+
+
     except Exception as e:
         logging.error(f"Erreur dans le chat: {e}")
         # msg_box.markdown(f"❌ Une erreur{e} s’est produite. Veuillez réessayer.")
