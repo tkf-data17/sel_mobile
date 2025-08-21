@@ -167,6 +167,10 @@ CHAT_STYLE = f"""
     line-height: 1.4;
 }}
 
+.chat-container {{
+    margin-top: 85px; /* décale tous les messages sous l’entête */
+}}
+
 /* Messages utilisateur */
 .user-bubble {{
     background-color: #00800020;  /* Vert léger */
