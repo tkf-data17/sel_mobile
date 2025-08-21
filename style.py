@@ -4,7 +4,7 @@ import base64
 
 
 # --- 2. Chemin et vérification de l'image ---
-image_file_name = "ressources\Armoiries_du_Togo.png"
+image_file_name = "ressources/Armoiries_du_Togo.png"
 
 if not os.path.exists(image_file_name):
     # st.error(f"Erreur : Le fichier image '{image_file_name}' n'a pas été trouvé. Assurez-vous qu'il est dans le même répertoire que votre script Streamlit.")
