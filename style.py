@@ -1,4 +1,4 @@
-import streamlit as st
+# import streamlit as st
 import os
 import base64
 from config import*
@@ -8,8 +8,9 @@ from config import*
 image_file_name = "ressources/Armoiries_du_Togo.png"
 
 if not os.path.exists(image_file_name):
-    st.error(f"Erreur : Le fichier image '{image_file_name}' n'a pas été trouvé. Assurez-vous qu'il est dans le même répertoire que votre script Streamlit.")
-    st.stop() # Arrête l'exécution si l'image n'est pas trouvée
+    # st.error(f"Erreur : Le fichier image '{image_file_name}' n'a pas été trouvé. Assurez-vous qu'il est dans le même répertoire que votre script Streamlit.")
+    # st.stop() # Arrête l'exécution si l'image n'est pas trouvée
+    print(f"Erreur : Le fichier image '{image_file_name}' n'a pas été trouvé. Assurez-vous qu'il est dans le même répertoire que votre script Streamlit.")
 
 # --- NOUVEAU : Lecture et encodage de l'image en Base64 ---
 try:
@@ -19,8 +20,9 @@ try:
     image_mime_type = "image/png" # Changez ceci si votre image est un .jpg, .jpeg, etc.
     image_src = f"data:{image_mime_type};base64,{encoded_image}"
 except Exception as e:
-    st.error(f"Erreur lors de l'encodage de l'image : {e}")
-    st.stop()
+    print(f"Erreur lors de la lecture de l'image : {e}")
+    # st.error(f"Erreur lors de l'encodage de l'image : {e}")
+    # st.stop()
 
 HEADER_STYLE = f"""
 <style>
