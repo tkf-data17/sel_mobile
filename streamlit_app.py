@@ -16,12 +16,14 @@ from manage_store import load_all_chunks, build_index, search, _generate_embeddi
 from query_classification import classify_with_llm, rewrite_question
 from style import HEADER_STYLE, CHAT_STYLE
 
-st.markdown(HEADER_STYLE, unsafe_allow_html=True)
-st.markdown(CHAT_STYLE, unsafe_allow_html=True)
 
 st.set_page_config(
     layout="wide" # Pour utiliser toute la largeur de l'écran
 )
+
+st.markdown(HEADER_STYLE, unsafe_allow_html=True)
+st.markdown(CHAT_STYLE, unsafe_allow_html=True)
+
 
 @st.cache_data
 def load_chunks():
