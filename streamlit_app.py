@@ -21,7 +21,7 @@ st.set_page_config(
     layout="wide" # Pour utiliser toute la largeur de l'écran
 )
 
-st.markdown(HEADER_STYLE, unsafe_allow_html=True)
+
 st.markdown(CHAT_STYLE, unsafe_allow_html=True)
 
 
