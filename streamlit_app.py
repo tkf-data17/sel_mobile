@@ -20,6 +20,12 @@ st.set_page_config(
     layout="wide" # Pour utiliser toute la largeur de l'écran
 )
 
+# Initialise l'historique de messages
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+if "last_interaction_id" not in st.session_state:
+    st.session_state.last_interaction_id = None
 
 @st.cache_data
 def load_chunks():
@@ -93,10 +99,6 @@ with st.sidebar:
         st.session_state.last_interaction_id = None
         st.rerun()  # Recharger l'application pour afficher la nouvelle conversation
 
-
-# --- HISTORIQUE ---
-if "messages" not in st.session_state:
-    st.session_state.messages = []
 
 
 # Affichage de l'historique du chat
