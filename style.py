@@ -69,17 +69,18 @@ header[data-testid="stHeader"] {{
     align-items: center;
     margin-top: 10;
     margin-bottom: 10px;
+    flex-wrap: wrap;
 }}
 
 .header-top img {{
-    height: 50px;
+    height: 40px;
     margin-right: 10px;
 }}
 
 .header-top h1 {{
     color: black;
+    font-size: 1.2em;
     margin: 0;
-    font-size: 1.5em;
     line-height: 1.2;
 }}
 
@@ -119,18 +120,18 @@ header[data-testid="stHeader"] {{
         width: 95%;
         padding: 10px;
         align-items: center;
-        text-align: center;
+        text-align: left;
         margin: 0 auto;
     }}
     .header-top {{
-        flex-direction: column;
+        flex-direction: row;
     }}
     .header-top img {{
-        height: 40px;
-        margin: 0 0 5px 0;
+        height: 35px;
+        margin-right: 8px;
     }}
     .header-top h1 {{
-        font-size: 1.2em;
+        font-size: 1em;
     }}
     .marquee-text {{
         font-size: 12px;
