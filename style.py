@@ -32,6 +32,11 @@ body {{
     min-width: unset;
 }}
 
+/* Contenu principal décalé pour le header fixe */
+main[data-testid="stAppViewContainer"] {{
+    padding-top: 120px;  /* même hauteur que ton header */
+}}
+
 /* Conteneur principal de l’en-tête */
 .fixed-header {{
     position: fixed;

@@ -7,7 +7,6 @@ import numpy as np
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
-from langchain_mistralai.chat_models import ChatMistralAI
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
 
@@ -205,24 +204,11 @@ if query := st.chat_input("Posez votre question ici..."):
         result = chat_response.choices[0].message.content
         
 
-    #     st.markdown(
-    #   f"""
-    #   <div style='
-    #       max-width: 800px;
-    #       margin: 0 auto;
-    #       padding: 20px;
-    #       background-color: #f9f9f9;
-    #       border: 1px solid #ddd;
-    #       border-radius: 8px;
-    #       overflow-wrap: break-word;
-    #       overflow-x: auto;
-    #       font-size: 16px;
-    #       color: #333;'>
-    #       {result}
-    #   </div>
-    #   """,
-    #   unsafe_allow_html=True
-    #   )
+        # Remplacer la bulle d'attente par la vraie réponse
+        placeholder.markdown(
+            f"<div class='chat-bubble bot-bubble'>{result}</div>",
+            unsafe_allow_html=True
+        )
 
         # Ajouter la réponse de l'assistant à l'historique pour affichage permanent
         st.session_state.messages.append({
