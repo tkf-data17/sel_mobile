@@ -95,7 +95,7 @@ Réponse: DIRECT - Question générale de connaissance
 #-----------------------------------------------------------------------------------------------------------
 
 
-def rewrite_question(user_question: str, conversation_history: List[Dict], max_history_entries: int = 6) -> str:
+def rewrite_question(user_question: str, conversation_history: List[Dict], max_history_entries: int = 3) -> str:
     """
     Reformule la `user_question` de manière autonome en tenant compte de l'historique.
     conversation_history : liste d'entrées {"role":"user"/"assistant", "content": "..."}
