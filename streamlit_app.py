@@ -206,31 +206,30 @@ if query := st.chat_input("Posez votre question ici..."):
 
         # Remplacer la bulle d'attente par la vraie réponse
         placeholder.markdown(
-            f"<div class='chat-bubble bot-bubble'>{result}</div>",
+            f"""
+            <div class='chat-bubble bot-bubble' style='position: relative;'>
+                {result}
+                <button onclick="navigator.clipboard.writeText(`{result}`)" 
+                        style="
+                            position: absolute;
+                            bottom: 5px;
+                            right: 5px;
+                            background: transparent;
+                            border: none;
+                            cursor: pointer;
+                            font-size: 16px;
+                        "
+                        title="Copier la réponse"
+                >📋</button>
+            </div>
+            """,
             unsafe_allow_html=True
         )
-
         # Ajouter la réponse de l'assistant à l'historique pour affichage permanent
         st.session_state.messages.append({
             "role": "assistant",
             "content": result
         })
-
-        # Affichage avec option de copie
-        for message in st.session_state.messages[-1:]:  # juste le dernier message
-            if message["role"] == "assistant":
-                # Container pour la bulle + bouton
-                with st.container():
-                    # Affichage de la bulle
-                    st.markdown(
-                        f"<div class='chat-bubble bot-bubble'>{message['content']}</div>",
-                        unsafe_allow_html=True
-                    )
-                    # Bouton pour copier
-                    copy_key = f"copy_{len(st.session_state.messages)}"
-                    if st.button("📋 Copier", key=copy_key):
-                        st.experimental_set_clipboard(message["content"])
-                        st.success("✅ Copié dans le presse-papiers !")
 
 
     except Exception as e:

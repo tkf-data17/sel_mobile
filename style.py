@@ -159,6 +159,7 @@ CHAT_STYLE = f"""
 .chat-bubble {{
     border-radius: 18px;
     padding: 10px 15px;
+    margin-top: 10px;
     margin: 8px 0;
     max-width: 70%;
     word-wrap: break-word;
