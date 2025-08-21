@@ -14,9 +14,10 @@ from mistralai.models.chat_completion import ChatMessage
 from config import MISTRAL_API_KEY, ALL_CHUNKS_PATH
 from manage_store import load_all_chunks, build_index, search, _generate_embeddings
 from query_classification import classify_with_llm, rewrite_question
-from style import HEADER_STYLE
+from style import HEADER_STYLE, CHAT_STYLE
 
-
+st.markdown(HEADER_STYLE, unsafe_allow_html=True)
+st.markdown(CHAT_STYLE, unsafe_allow_html=True)
 
 st.set_page_config(
     layout="wide" # Pour utiliser toute la largeur de l'écran
@@ -102,6 +103,14 @@ if "messages" not in st.session_state:
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
+        # Récupération du rôle et du contenu du message
+        role = message["role"]
+        content = message["content"]
+        bubble_class = "user-bubble" if role == "user" else "bot-bubble"
+        st.markdown(
+            f"<div class='chat-bubble {bubble_class}'>{content}</div>",
+            unsafe_allow_html=True
+        )
         # Afficher les sources si elles existent pour les messages de l'assistant
         if message["role"] == "assistant" and "sources" in message and message["sources"]:
             with st.expander("Sources utilisées"):

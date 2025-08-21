@@ -27,25 +27,24 @@ HEADER_STYLE = f"""
 
 /* Empêche le layout de devenir trop étroit */
 body {{
-    min-width: 1100px;
+    min-width: unset;
 }}
 
 /* Conteneur principal de l’en-tête */
 .fixed-header {{
     position: fixed;
-    top: 10px;
+    top: 0;
     left: 0;
     right: 0;
-    margin: 0 auto; /* Centre l'élément horizontalement */
-    max-width: 1200px; /* Définissez une largeur maximale pour l'en-tête */
+    margin: 0 auto;
     width: 100%;
-    border-bottom: 1px solid #ccc;   /*c'est pour afficher la bordure de l'entete*/
-    z-index: 9999;  /* ← TRÈS IMPORTANT */
+    border-bottom: 1px solid #ccc;
+    z-index: 9999;
     background-color: white;
     color: black;
-    padding: 50px 20px 20px 320px; /* ← ajusté ici */
-    box-sizing: border-box; /* ← protection contre débordement */
-    box-shadow: 0 0px 0px rgba(0,0,0,0.2);
+    padding: 20px;
+    box-sizing: border-box;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -55,41 +54,38 @@ body {{
 .header-top {{
     display: flex;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }}
 
 .header-top img {{
-    height: 60px;
-    margin-right: 15px;
+    height: 50px;
+    margin-right: 10px;
 }}
 
 .header-top h1 {{
     color: black;
     margin: 0;
-    font-size: 2em;
-    line-height: 1;
+    font-size: 1.5em;
+    line-height: 1.2;
 }}
 
 /* Texte défilant */
 .marquee-container {{
     width: 100%;
     overflow: hidden;
-    height: 30px;
-    /*position: fixed;*/
-    top: 125px;  /* ou l'ajuster selon ton header */
-    width: 100%;
-    z-index: 9998;
+    height: 24px;
+    background-color: #f0f0f0;
 }}
 
 .marquee-text {{
     display: inline-block;
     white-space: nowrap;
     padding-left: 100%;
-    animation: scroll-left 50s linear infinite;
-    font-size: 16px;
+    animation: scroll-left 40s linear infinite;
+    font-size: 14px;
     color: darkblue;
     font-weight: bold;
-    line-height: 30px;
+    line-height: 24px;
 }}
 
 @keyframes scroll-left {{
@@ -99,15 +95,35 @@ body {{
 
 /* Décalage du contenu principal */
 .block-container {{
-    padding-top: 160px;
+    padding-top: 120px;
 }}
 
-/* Responsive: réduire la marge gauche si petit écran */
+
+/* 📱 Version mobile */
 @media (max-width: 768px) {{
     .fixed-header {{
-        padding-left: 20px;
+        padding: 10px 15px;
+        align-items: center;
+        text-align: center;
+    }}
+    .header-top {{
+        flex-direction: column;
+    }}
+    .header-top img {{
+        height: 40px;
+        margin: 0 0 5px 0;
+    }}
+    .header-top h1 {{
+        font-size: 1.2em;
+    }}
+    .marquee-text {{
+        font-size: 12px;
+    }}
+    .block-container {{
+        padding-top: 100px;
     }}
 }}
+
 </style>
 
 <div class="fixed-header">
@@ -124,3 +140,39 @@ body {{
 </div>
 """
 
+CHAT_STYLE = f"""
+<style>
+/* Bulles de chat */
+.chat-bubble {{
+    border-radius: 18px;
+    padding: 10px 15px;
+    margin: 8px 0;
+    max-width: 70%;
+    word-wrap: break-word;
+    font-size: 15px;
+    line-height: 1.4;
+}}
+
+/* Messages utilisateur */
+.user-bubble {{
+    background-color: #00800020;  /* Vert léger */
+    margin-left: auto;            /* Aligne à droite */
+    text-align: right;
+}}
+
+/* Messages assistant */
+.bot-bubble {{
+    background-color: #FFD70020;  /* Jaune clair */
+    margin-right: auto;           /* Aligne à gauche */
+    text-align: left;
+}}
+
+/* 📱 Adaptation mobile */
+@media (max-width: 768px) {{
+    .chat-bubble {{
+        max-width: 95%;  /* Presque toute la largeur */
+        font-size: 16px; /* Texte un peu plus gros */
+    }}
+}}
+</style>
+"""
