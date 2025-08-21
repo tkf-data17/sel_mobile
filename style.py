@@ -35,7 +35,7 @@ body {{
 main[data-testid="stAppViewContainer"] {{
     background-color: red;  /* noir clair */
     color: white;  
-    padding-top: 120px;  /* même hauteur que ton header */
+    padding-top: 80px;  /* même hauteur que ton header */
 }}
 
 /* Cache complètement l'entête par défaut de Streamlit */
@@ -68,18 +68,18 @@ header[data-testid="stHeader"] {{
     display: flex;
     align-items: center;
     margin-top: 10;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     flex-wrap: wrap;
 }}
 
 .header-top img {{
-    height: 40px;
+    height: 50px;
     margin-right: 10px;
 }}
 
 .header-top h1 {{
     color: black;
-    font-size: 1.2em;
+    font-size: 1.5em;
     margin: 0;
     line-height: 1.2;
 }}
@@ -181,16 +181,16 @@ CHAT_STYLE = f"""
 
 /* Messages utilisateur */
 .user-bubble {{
-    background-color: green;  /* Vert léger */
-    color: white;
+    background-color: #FFD700;  /* Jaune clair */
+    color: black;
     margin-left: auto;            /* Aligne à droite */
     text-align: right;
 }}
 
 /* Messages assistant */
 .bot-bubble {{
-    background-color: #FFD700;
-    color: black;
+    background-color: green;
+    color: white;
     margin-right: auto;           /* Aligne à gauche */
     text-align: left;
 }}
