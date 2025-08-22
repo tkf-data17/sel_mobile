@@ -51,7 +51,9 @@ header[data-testid="stHeader"] {{
     right: 0;
     margin: 0 auto;
     width: 100%;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 0px solid transparent;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
     z-index: 9999;
     background-color: #FFD700; /* Jaune clair */
     color: black;
@@ -125,13 +127,15 @@ header[data-testid="stHeader"] {{
     }}
     .header-top {{
         flex-direction: row;
+        align-items: center;
+        gap: 4px;
     }}
     .header-top img {{
-        height: 35px;
+        height: 40px;
         margin-right: 8px;
     }}
     .header-top h1 {{
-        font-size: 1em;
+        font-size: 1.2em;
     }}
     .marquee-text {{
         font-size: 12px;
@@ -205,5 +209,46 @@ CHAT_STYLE = f"""
 </style>
 """
 
+# Chemin vers ton logo local
+logo_path = "ressources/drapeau.jpg"
+
+with open(logo_path, "rb") as f:
+    encoded_logo = base64.b64encode(f.read()).decode("utf-8")
 
 
+
+BODY_STYLE = f"""
+<style>
+/* Fond global de l'application */
+body, .stApp, main[data-testid="stAppViewContainer"] {{
+    background-color: #1e1e1e !important;
+    color: white !important;
+}}
+
+/* Zone de saisie du chat */
+div[data-testid="stBottomBlockContainer"] {{
+    background-color: #1e1e1e !important;
+}}
+
+/* Filigrane logo depuis fichier local */
+.stApp::before {{
+    content: "";
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 250px;
+    height: 250px;
+    background: url("data:image/png;base64,{encoded_logo}") no-repeat center;
+    background-size: contain;
+    opacity: 0.25;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 0; /* bien derrière tout le contenu */
+}}
+
+/* Supprimer l'entête Streamlit par défaut */
+header[data-testid="stHeader"] {{
+    display: none;
+}}
+</style>
+"""

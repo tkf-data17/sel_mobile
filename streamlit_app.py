@@ -10,7 +10,7 @@ from mistralai.models.chat_completion import ChatMessage
 from config import MISTRAL_API_KEY, ALL_CHUNKS_PATH
 from manage_store import load_all_chunks, build_index, search, _generate_embeddings
 from query_classification import classify_with_llm, rewrite_question
-from style import HEADER_STYLE, CHAT_STYLE
+from style import HEADER_STYLE, CHAT_STYLE, BODY_STYLE
 
 
 st.set_page_config(
@@ -63,10 +63,9 @@ index, chunks = get_build_index()
 #------------------------------------------------------------------------------------------------
 
 # --- 3. CSS pour l'en-tête fixe et large, incluant les styles pour l'image et le texte ---
-st.markdown(
-    HEADER_STYLE,
-    unsafe_allow_html=True
-)
+st.markdown(HEADER_STYLE, unsafe_allow_html=True)
+
+st.markdown(BODY_STYLE, unsafe_allow_html=True)
 
 st.markdown(CHAT_STYLE, unsafe_allow_html=True)
 
@@ -74,9 +73,6 @@ st.markdown(CHAT_STYLE, unsafe_allow_html=True)
 
 # --- Interface Utilisateur ---
 
-st.write("")
-st.write("")
-st.caption(f"Posez vos questions sur les procedures d'obtentions des documents administratifs")
 
 #----------------------------------------------------------
 # Creation de la sidebar pour l'assistant virtuel
