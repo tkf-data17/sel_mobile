@@ -119,7 +119,7 @@ header[data-testid="stHeader"] {{
 /* 📱 Version mobile */
 @media (max-width: 768px) {{
     .fixed-header {{
-        width: 95%;
+        width: 100%;
         padding: 10px;
         align-items: center;
         text-align: left;
@@ -131,11 +131,11 @@ header[data-testid="stHeader"] {{
         gap: 4px;
     }}
     .header-top img {{
-        height: 40px;
+        height: 50px;
         margin-right: 8px;
     }}
     .header-top h1 {{
-        font-size: 1.2em;
+        font-size: 1.5em;
     }}
     .marquee-text {{
         font-size: 12px;

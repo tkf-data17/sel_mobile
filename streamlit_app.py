@@ -162,6 +162,8 @@ if query := st.chat_input("Posez votre question ici..."):
     - Si l'information n'est pas dans les documents, dites : "Je n'ai pas cette information dans ma base de données."
     - Ne jamais inventer ou supposer des prix, pieces à fournir, délais ou procédures.
     - Proposez à l'utilisateur le lien vers la page officiel quand c'est disponible dans le contexte.
+    - si l'utilisateur pose une question concernant le certificat de nationalité sans précisé le mot clé "certificat", traite la demande en remplaçant 'nationalité' par 'certificat de nationalité'.
+    - si l'utilisateur pose une question concernant le casier judiciaire sans précisé le mot clé "extrait", traite la demande en remplaçant 'casier judiciaire' par 'extrait de casier judiciaire'.
 
     Contexte fourni :
     ---
@@ -177,6 +179,7 @@ if query := st.chat_input("Posez votre question ici..."):
             system_prompt = """Votre nom est SEL, vous êtes un assistant virtuel pour le service en ligne du gouvernement togolais.
 
     Répondez à la question de l'utilisateur en utilisant vos connaissances générales.
+    Donnez une reponse tres courte. maximum 2 phrases
     Soyez concis, précis et utile.
 
     Si la question concerne des informations spécifiques aux services en ligne du gouvernement togolais que vous ne connaissez pas, indiquez clairement que vous n'avez pas cette information spécifique.
