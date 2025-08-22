@@ -181,6 +181,7 @@ if query := st.chat_input("Posez votre question ici..."):
     Répondez à la question de l'utilisateur en utilisant vos connaissances générales.
     Donnez une reponse tres courte. maximum 2 phrases
     Soyez concis, précis et utile.
+    Réponds obligatoirement en français.
 
     Si la question concerne des informations spécifiques aux services en ligne du gouvernement togolais que vous ne connaissez pas, indiquez clairement que vous n'avez pas cette information spécifique.
     N'inventez pas d'informations sur le gouvernement togolais.
