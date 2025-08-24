@@ -16,3 +16,4 @@ streamlit==1.44.1
 mistralai==0.4.2
 python-dotenv
 google-genai
+streamlit-feedback == 0.1.4
