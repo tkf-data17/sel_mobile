@@ -3,6 +3,8 @@ import streamlit as st
 import logging
 from typing import Optional
 import numpy as np
+import uuid
+from streamlit_feedback import streamlit_feedback
 
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
@@ -62,11 +64,9 @@ index, chunks = get_build_index()
 
 #------------------------------------------------------------------------------------------------
 
-# --- 3. CSS pour l'en-tête fixe et large, incluant les styles pour l'image et le texte ---
+# --- Styles ---
 st.markdown(HEADER_STYLE, unsafe_allow_html=True)
-
 st.markdown(BODY_STYLE, unsafe_allow_html=True)
-
 st.markdown(CHAT_STYLE, unsafe_allow_html=True)
 
 #-------------------------------------------------------------------------------------------------------
@@ -91,18 +91,27 @@ with st.sidebar:
         st.rerun()  # Recharger l'application pour afficher la nouvelle conversation
 
 
-
-
-# Affichage de l'historique du chat
+# ----------------------------------------------------------
+# Affichage de l'historique
+# ----------------------------------------------------------
 for message in st.session_state.messages:
-    # ajouter la question reformulée à l'historique
     role = message["role"]
     content = message["content"]
     bubble_class = "user-bubble" if role == "user" else "bot-bubble"
-    st.markdown(
-        f"<div class='chat-bubble {bubble_class}'>{content}</div>",
-        unsafe_allow_html=True
-    )
+
+    # Affichage de la bulle
+    st.markdown(f"<div class='chat-bubble {bubble_class}'>{content}</div>", unsafe_allow_html=True)
+
+    # Feedback sous chaque réponse de l'assistant
+    if role == "assistant" and "interaction_id" in message:
+        # Colonnes : gauche petite pour le feedback, droite vide
+        col1, col2 = st.columns([0.08, 0.92])
+        with col1:
+            streamlit_feedback(
+                feedback_type="thumbs",
+                key=f"feedback_{message['interaction_id']}",
+                align="flex-start",
+            )
 
 
 # --- CHAT INPUT ---
@@ -111,20 +120,16 @@ if query := st.chat_input("Posez votre question ici..."):
     if query.strip() == "":
         st.warning("Veuillez poser une question.")
     else:
-        # ajouter la question reformulée à l'historique
+        # Ajouter et afficher immédiatement la question de l'utilisateur
         st.session_state.messages.append({"role": "user", "content": query})
-        # Afficher la bulle utilisateur immédiatement
-        st.markdown(
-            f"<div class='chat-bubble user-bubble'>{query}</div>",
-        unsafe_allow_html=True
-    )
-    
-    # Créer une bulle "en attente" pour l'assistant
-    placeholder = st.empty()
-    placeholder.markdown(
-        "<div class='chat-bubble bot-bubble'>⏳ Traitement en cours...</div>",
-        unsafe_allow_html=True
-    )
+        st.markdown(f"<div class='chat-bubble user-bubble'>{query}</div>", unsafe_allow_html=True)
+
+        # Placeholder pour la réponse
+        placeholder = st.empty()
+        placeholder.markdown(
+            "<div class='chat-bubble bot-bubble'>⏳ Traitement en cours...</div>",
+            unsafe_allow_html=True
+        )
 
     try:
         # --- CLASSIFICATION ---
@@ -200,33 +205,30 @@ if query := st.chat_input("Posez votre question ici..."):
         result = chat_response.choices[0].message.content
         
 
-        # Remplacer la bulle d'attente par la vraie réponse
-        placeholder.markdown(
-            f"""
-            <div class='chat-bubble bot-bubble' style='position: relative;'>
-                {result}
-                <button onclick="navigator.clipboard.writeText(`{result}`)" 
-                        style="
-                            position: absolute;
-                            bottom: 5px;
-                            right: 5px;
-                            background: transparent;
-                            border: none;
-                            cursor: pointer;
-                            font-size: 16px;
-                        "
-                        title="Copier la réponse"
-                >📋</button>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-        # Ajouter la réponse de l'assistant à l'historique pour affichage permanent
+
+        interaction_id = str(uuid.uuid4())
+
+        # Ajouter la réponse à l'historique
         st.session_state.messages.append({
             "role": "assistant",
-            "content": result
+            "content": result,
+            "interaction_id": interaction_id
         })
 
+        # Remplacer le placeholder par la réponse finale
+        placeholder.markdown(
+            f"<div class='chat-bubble bot-bubble'>{result}</div>",
+            unsafe_allow_html=True
+        )
+
+        # Feedback pour la réponse courante dans colonne compacte à gauche
+        col1, col2 = st.columns([0.08, 0.92])
+        with col1:
+            streamlit_feedback(
+                feedback_type="thumbs",
+                key=f"feedback_{interaction_id}",
+                align="flex-start",
+            )
 
     except Exception as e:
         logging.error(f"Erreur dans le chat: {e}")
