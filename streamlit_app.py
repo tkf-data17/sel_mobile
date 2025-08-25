@@ -12,7 +12,7 @@ from mistralai.models.chat_completion import ChatMessage
 from config import MISTRAL_API_KEY, ALL_CHUNKS_PATH
 from manage_store import load_all_chunks, build_index, search, _generate_embeddings
 from query_classification import classify_with_llm, rewrite_question
-from style import HEADER_STYLE, CHAT_STYLE, BODY_STYLE
+from style import HEADER_STYLE, CHAT_STYLE, BODY_STYLE, FEEDBACK_STYLE
 
 
 st.set_page_config(
@@ -68,6 +68,8 @@ index, chunks = get_build_index()
 st.markdown(HEADER_STYLE, unsafe_allow_html=True)
 st.markdown(BODY_STYLE, unsafe_allow_html=True)
 st.markdown(CHAT_STYLE, unsafe_allow_html=True)
+st.markdown(FEEDBACK_STYLE, unsafe_allow_html=True)
+
 
 #-------------------------------------------------------------------------------------------------------
 
@@ -107,12 +109,13 @@ for message in st.session_state.messages:
         # Colonnes : gauche petite pour le feedback, droite vide
         col1, col2 = st.columns([0.08, 0.92])
         with col1:
+            st.markdown('<div class="feedback-wrapper">', unsafe_allow_html=True)
             streamlit_feedback(
                 feedback_type="thumbs",
                 key=f"feedback_{message['interaction_id']}",
                 align="flex-start",
             )
-
+            st.markdown('</div>', unsafe_allow_html=True)
 
 # --- CHAT INPUT ---
 if query := st.chat_input("Posez votre question ici..."):
@@ -224,12 +227,13 @@ if query := st.chat_input("Posez votre question ici..."):
         # Feedback pour la réponse courante dans colonne compacte à gauche
         col1, col2 = st.columns([0.08, 0.92])
         with col1:
+            st.markdown('<div class="feedback-wrapper">', unsafe_allow_html=True)
             streamlit_feedback(
                 feedback_type="thumbs",
                 key=f"feedback_{interaction_id}",
                 align="flex-start",
             )
-
+            st.markdown('</div>', unsafe_allow_html=True)
     except Exception as e:
         logging.error(f"Erreur dans le chat: {e}")
         # msg_box.markdown(f"❌ Une erreur{e} s’est produite. Veuillez réessayer.")

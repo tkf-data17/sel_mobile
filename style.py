@@ -252,3 +252,13 @@ header[data-testid="stHeader"] {{
 }}
 </style>
 """
+
+FEEDBACK_STYLE = """
+<style>
+/* Limiter la largeur du feedback */
+.feedback-wrapper {
+    max-width: 60px; /* ou la largeur que tu veux */
+    display: inline-block;
+}
+</style>
+"""
