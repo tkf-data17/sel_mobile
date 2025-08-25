@@ -9,7 +9,7 @@ from google import genai
 
 # FONCTION POUR UNE CLASSIFICATION DES REQUETES
 
-def classify_with_llm(query: str) -> Tuple[bool, float, str]:
+def classify_with_llm(query: str) -> Tuple[bool, str]:
         """
         Utilise le LLM pour classifier la requête
 
@@ -74,21 +74,19 @@ Réponse: DIRECT - Question générale de connaissance
 
             # Analyser la réponse
             if result.startswith("RAG"):
-                confidence = 0.85  # Confiance élevée dans la décision du LLM
                 reason = result.replace("RAG - ", "").replace("RAG-", "").replace("RAG:", "").strip()
-                return True, confidence, reason
+                return True, reason
             elif result.startswith("DIRECT"):
-                confidence = 0.85
                 reason = result.replace("DIRECT - ", "").replace("DIRECT-", "").replace("DIRECT:", "").strip()
-                return False, confidence, reason
+                return False, reason
             else:
                 # Réponse ambiguë, utiliser RAG par défaut
-                return True, 0.6, "Classification ambiguë, utilisation de RAG par précaution"
+                return True, "Classification ambiguë, utilisation de RAG par précaution"
 
         except Exception as e:
             logging.error(f"Erreur lors de la classification avec LLM: {e}")
             # En cas d'erreur, utiliser RAG par défaut
-            return True, 0.5, f"Erreur de classification: {str(e)}"
+            return True, f"Erreur de classification: {str(e)}"
 
 #-----------------------------------------------------------------------------------------------------------
 # FONCTION POUR AMELIORER LA QUESTION DE L'UTILISATEUR
@@ -159,7 +157,7 @@ def rewrite_question(user_question: str, conversation_history: List[Dict], max_h
 #-----------------------------------------------------------------------------------------------------------
 
 def answer_question(query):
-    needs_rag, confidence, _ = classify_with_llm(query)
+    needs_rag, _ = classify_with_llm(query)
 
     if needs_rag:
         logging.info(f"Mode RAG - Recherche de documents pour la question: {query}")

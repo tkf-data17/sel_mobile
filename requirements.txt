@@ -1,11 +1,4 @@
 langchain
-langchain_mistralai
-langchain_together
-langchain_ollama
-langchain_community
-langchain-core
-langchain-huggingface
-chromadb
 sentence-transformers
 transformers
 torch>=2.2.2
@@ -15,5 +8,4 @@ beautifulsoup4
 streamlit==1.44.1
 mistralai==0.4.2
 python-dotenv
-google-genai
 streamlit-feedback == 0.1.4

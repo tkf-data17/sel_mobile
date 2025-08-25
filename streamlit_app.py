@@ -137,14 +137,14 @@ if query := st.chat_input("Posez votre question ici..."):
     try:
         # --- CLASSIFICATION ---
         # prompt = powered_query(query, st.session_state.messages)
-        needs_rag, confidence, _ = classify_with_llm(query)
+        needs_rag, _ = classify_with_llm(query)
 
         if needs_rag:
             logging.info(f"Mode RAG - Recherche de documents pour la question: {query}")
             # reformuler la question
             rewrited_query = rewrite_question(query, st.session_state.messages)
             # recherche de documents
-            retrieved_docs = search(rewrited_query, min_score=0.75)
+            retrieved_docs = search(rewrited_query, min_score=0.80)
                 # Préparer le contexte pour le LLM
             context_str = "\n\n---\n\n".join([
                 f"Source: {doc['metadata'].get('source', 'Inconnue')} (Score: {doc['score']:.4f})\nContenu: {doc['text']}"
