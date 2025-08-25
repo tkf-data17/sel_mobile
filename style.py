@@ -221,13 +221,13 @@ BODY_STYLE = f"""
 <style>
 /* Fond global de l'application */
 body, .stApp, main[data-testid="stAppViewContainer"] {{
-    background-color: #1e1e1e !important;
-    color: white !important;
+    background-color: white !important; /*#1e1e1e*/
+    color: black !important;
 }}
 
 /* Zone de saisie du chat */
 div[data-testid="stBottomBlockContainer"] {{
-    background-color: #1e1e1e !important;
+    background-color: white !important;
 }}
 
 /* Filigrane logo depuis fichier local */
