@@ -5,7 +5,7 @@ from config import *
 from manage_store import search
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
-from google import genai
+import google.genai as genai
 
 # FONCTION POUR UNE CLASSIFICATION DES REQUETES
 
