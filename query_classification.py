@@ -134,8 +134,16 @@ def rewrite_question(user_question: str, conversation_history: List[Dict], max_h
             model="gemini-2.5-flash",  # Remplace par le modèle souhaité
             contents=system_prompt
         )
-        rewritten = resp.text.strip()
-        # Par sécurité, si la sortie est vide, retourner la question d'origine
+            # Essayer d'extraire correctement le texte
+        rewritten = None
+        if hasattr(resp, "text") and resp.text:
+            rewritten = resp.text.strip()
+        elif hasattr(resp, "candidates") and resp.candidates:
+            parts = resp.candidates[0].content.parts
+            if parts and hasattr(parts[0], "text"):
+                rewritten = parts[0].text.strip()
+        
+        # Fallback : si pas de texte, renvoyer la question brute
         if not rewritten:
             return user_question
         return rewritten
