@@ -2,7 +2,7 @@ langchain==0.2.16
 sentence-transformers==2.2.2
 transformers==4.44.2
 torch==2.8.0
-faiss-cpu==1.7.4
+faiss-cpu-cp312
 pypdf==4.2.0
 beautifulsoup4==4.12.3
 streamlit==1.37.1
