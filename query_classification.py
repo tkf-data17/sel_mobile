@@ -24,7 +24,7 @@ def classify_with_llm(query: str) -> Tuple[bool, str]:
 Votre tâche est de déterminer si une question nécessite une recherche dans une base de connaissances spécifique au gouvernement.
 
 Répondez UNIQUEMENT par "RAG" ou "DIRECT" suivi d'une brève explication:
-- "RAG" si la question porte sur des informations spécifiques a la demande de passeport
+- "RAG" si la question porte sur des informations spécifiques sur les documents admnistratifs
 - "DIRECT" si c'est une question générale, une salutation, ou une question qui ne nécessite pas d'informations spécifiques à la commune.
 
 Exemples:
@@ -115,7 +115,6 @@ def rewrite_question(user_question: str, conversation_history: List[Dict], max_h
         références implicites).
         *** Regles importantes ***
         - si l'historique est vide, retourne la question exactement comme elle est;
-        - si la question ne fournit pas suffisamment de contexte, demande des précisions à l'utilisateur;
         - Réponds uniquement par la question reformulée, n'ajoute rien d'autre, pas d'information superflux provenant de tes données personnelles;
         - Si la question est déjà autonome, la renvoyer telle quelle;
         - La reponse doit etre OBLIGATOIREMENT EN FRANçAIS, concise et precise.
