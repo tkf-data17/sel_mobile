@@ -23,6 +23,7 @@ except Exception as e:
     # st.error(f"Erreur lors de l'encodage de l'image : {e}")
     # st.stop()
 
+
 HEADER_STYLE = f"""
 <style>
 
@@ -112,7 +113,7 @@ header[data-testid="stHeader"] {{
 
 /* Décalage du contenu principal */
 .block-container {{
-    padding-top: 120px;
+    padding-top: 80px;
     margin-top: 0px;    /*utilisation de l'espace */
 }}
 
@@ -180,7 +181,7 @@ CHAT_STYLE = f"""
 }}
 
 .chat-container {{
-    margin-top: 85px; /* décale tous les messages sous l’entête */
+    margin-top: 40px; /* décale tous les messages sous l’entête */
 }}
 
 /* Messages utilisateur */
@@ -202,6 +203,7 @@ CHAT_STYLE = f"""
 /* 📱 Adaptation mobile */
 @media (max-width: 768px) {{
     .chat-bubble {{
+        margin-top: 4px;
         max-width: 95%;  /* Presque toute la largeur */
         font-size: 16px; /* Texte un peu plus gros */
     }}

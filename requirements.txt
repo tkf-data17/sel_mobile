@@ -1,16 +1,12 @@
-langchain==0.2.16
-sentence-transformers==2.2.2
-transformers==4.44.2
-torch==2.8.0
-faiss-cpu-cp312
-pypdf==4.2.0
-beautifulsoup4==4.12.3
-streamlit==1.37.1
+langchain
+sentence-transformers
+transformers
+torch>=2.2.2
+faiss-cpu
+pypdf
+beautifulsoup4
+streamlit==1.44.1
 mistralai==0.4.2
-python-dotenv==1.0.1
-streamlit-feedback==0.1.4
-google-genai==0.3.0
-protobuf<5
-markdown-it-py==3.0.0
-pygments==2.17.2
-rich==13.7.1
+python-dotenv
+google-genai
+streamlit-feedback == 0.1.4
