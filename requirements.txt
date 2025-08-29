@@ -1,7 +1,7 @@
 langchain
 sentence-transformers
 transformers
---extra-index-url https://download.pytorch.org/whl/cpu
+# --extra-index-url https://download.pytorch.org/whl/cpu
 torch==2.2.2+cpu
 faiss-cpu
 pypdf
@@ -11,5 +11,5 @@ mistralai==0.4.2
 python-dotenv
 google-genai
 streamlit-feedback == 0.1.4
-spacy>=3.6.0
-https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-3.7.0/fr_core_news_sm-3.7.0-py3-none-any.whl
+# spacy>=3.6.0
+# https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-3.7.0/fr_core_news_sm-3.7.0-py3-none-any.whl

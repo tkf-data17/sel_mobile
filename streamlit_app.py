@@ -172,7 +172,8 @@ if query := st.chat_input("Posez votre question ici..."):
                 {"text": doc["text"]}   #, "metadata": doc["metadata"], "score": doc["score"]
                 for doc in retrieved_docs
             ]
-
+            # fixation de la temperature
+            temperature = 0.2
             # Construction du prompt RAG avec placeholders pour le contexte et la question
             system_prompt = f"""Votre nom est SEL, Vous êtes l'assistant utile de l'administration publique togolaise qui répond aux questions relatives au processus d'obtention des documents administratives (description, délai d'exécution, coût de la procédure, durée de validité, pièces à fournir, étapes à suivre, etc).
 
@@ -201,8 +202,10 @@ if query := st.chat_input("Posez votre question ici..."):
             logging.info(f"Mode direct - Réponse basée sur les connaissances générales du modèle")
             # pas de reformulation de question
             rewrited_query = query
-            
+            # fixation de la temperature
+            temperature = 0.5
             system_prompt = """Votre nom est SEL, vous êtes un assistant virtuel avec pour role de repondre aux utilisateur concernant les service en ligne offert par le gouvernement togolais.
+            le lien pour consulter de façon détaillée les services en ligne est : https://service-public.gouv.tg/service-online
 
     Répondez à la question de l'utilisateur en utilisant vos connaissances générales.
     Donnez une reponse tres courte. maximum 2 phrases, pas d'informations superflues.
@@ -220,7 +223,7 @@ if query := st.chat_input("Posez votre question ici..."):
         chat_response = mistral_client.chat(
             model="mistral-small",
             messages=messages_for_api,
-            temperature=0.5,
+            temperature=temperature,
             # max_tokens=1024
         )
         result = chat_response.choices[0].message.content

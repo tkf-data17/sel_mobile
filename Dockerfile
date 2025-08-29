@@ -11,7 +11,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Installer le modèle spaCy français
-RUN python -m spacy download fr_core_news_sm
+# RUN python -m spacy download fr_core_news_sm
 
 EXPOSE 8501
 
