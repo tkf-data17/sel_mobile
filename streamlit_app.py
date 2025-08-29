@@ -241,7 +241,7 @@ if query := st.chat_input("Posez votre question ici..."):
         # 🔹 Vérification anti-hallucination
         if needs_rag:
             # Vérifier que la réponse contient bien du contexte
-            if not any(doc["text"][:50] in result for doc in retrieved_docs):
+            if not any(doc["text"][:100] in result for doc in retrieved_docs):
                 result = "Je n'ai pas cette information dans ma base de données."
         else:
             # Vérifier que la réponse n'est pas trop longue ou hors-sujet
