@@ -237,17 +237,17 @@ if query := st.chat_input("Posez votre question ici..."):
         result = chat_response.choices[0].message.content
         logging.info(f"Réponse du LLM: {result}")
         
-        def contains_keywords(result, docs, min_match=2):
-            for doc in docs:
-                words = doc["text"].split()[:10]  # 10 premiers mots du chunk
-                matches = sum(1 for w in words if w.lower() in result.lower())
-                if matches >= min_match:
-                    return True
-            return False
+        # def contains_keywords(result, docs, min_match=2):
+        #     for doc in docs:
+        #         words = doc["text"].split()[:10]  # 10 premiers mots du chunk
+        #         matches = sum(1 for w in words if w.lower() in result.lower())
+        #         if matches >= min_match:
+        #             return True
+        #     return False
         
         # 🔹 Vérification anti-hallucination
-        if needs_rag and not contains_keywords(result, retrieved_docs):
-            result = "Je n'ai pas cette information dans ma base de données."
+        if needs_rag:
+            result = result
         else:
             # Vérifier que la réponse n'est pas trop longue ou hors-sujet
             if len(result.split()) > 50:  # max ~2 phrases
