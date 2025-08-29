@@ -163,9 +163,11 @@ if query := st.chat_input("Posez votre question ici..."):
 
             # recherche de documents
             retrieved_docs = search(rewrited_query, min_score=0.80)
+            # 🔹 Trier et garder uniquement les 3 meilleurs chunks
+            retrieved_docs = sorted(retrieved_docs, key=lambda x: x['score'], reverse=True)[:3]
                 # Préparer le contexte pour le LLM
             context_str = "\n\n---\n\n".join([
-                f"Source: {doc['metadata'].get('source', 'Inconnue')} (Score: {doc['score']:.4f})\nContenu: {doc['text']}"
+                f"Source: {doc['metadata'].get('source', 'Inconnue')}\nContenu: {doc['text']}"
                 for doc in retrieved_docs
             ])
             sources_for_log = [ # Version simplifiée pour le log et l'affichage
@@ -177,17 +179,16 @@ if query := st.chat_input("Posez votre question ici..."):
             # Construction du prompt RAG avec placeholders pour le contexte et la question
             system_prompt = f"""Votre nom est SEL, Vous êtes l'assistant utile de l'administration publique togolaise qui répond aux questions relatives au processus d'obtention des documents administratives (description, délai d'exécution, coût de la procédure, durée de validité, pièces à fournir, étapes à suivre, etc).
 
-    Utilisez le contexte suivant pour répondre à la question.
-
+  
     Règles importantes :
+    - Répondez uniquement avec les informations présentes dans le contexte fourni
     - Répondez obligatoirement en français
     - si l'utilisateur pose une question sans donner la precision sur le documents recherché, dit lui de preciser le document recherché.
         Exemple:
         user: combien?
         system: veuillez reformuler votre question en precisant le type de documents que vous recherchez.
-    - Répondez uniquement avec les informations présentes dans les documents fournis
     - Si l'information n'est pas dans les documents, dites : "Je n'ai pas cette information dans ma base de données."
-    - Ne jamais inventer ou supposer des prix, pieces à fournir, délais ou procédures.
+    - Ne jamais inventer une information.
     - Proposez à l'utilisateur le lien vers la page officiel quand c'est disponible dans le contexte.
     - si l'utilisateur pose une question concernant le certificat de nationalité sans précisé le mot clé "certificat", traite la demande en remplaçant 'nationalité' par 'certificat de nationalité'.
     - si l'utilisateur pose une question concernant le casier judiciaire sans précisé le mot clé "extrait", traite la demande en remplaçant 'casier judiciaire' par 'extrait de casier judiciaire'.
@@ -196,6 +197,9 @@ if query := st.chat_input("Posez votre question ici..."):
     ---
     {context_str}
 
+    QUESTION :
+    {rewrited_query}
+
     """
 
         else:
@@ -203,15 +207,19 @@ if query := st.chat_input("Posez votre question ici..."):
             # pas de reformulation de question
             rewrited_query = query
             # fixation de la temperature
-            temperature = 0.5
-            system_prompt = """Votre nom est SEL, vous êtes un assistant virtuel avec pour role de repondre aux utilisateur concernant les service en ligne offert par le gouvernement togolais.
-            le lien pour consulter de façon détaillée les services en ligne est : https://service-public.gouv.tg/service-online
+            temperature = 0.3
+            system_prompt = """
+                Votre nom est SEL. Vous êtes l'assistant virtuel du gouvernement togolais.  
 
-    Répondez à la question de l'utilisateur en utilisant vos connaissances générales.
-    Donnez une reponse tres courte. maximum 2 phrases, pas d'informations superflues.
-    Soyez concis, précis et utile.
-    Réponds obligatoirement en français.
-    Si vous ne connaissez pas la réponse, dites simplement "Je n'ai pas cette information à ma disposition."
+                ⚠️ Règles importantes :
+                - Répondez uniquement en français.  
+                - Donnez une réponse courte (max 2 phrases).  
+                - Soyez concis, précis et utile.  
+                - Si vous n'êtes pas sûr de la réponse, dites exactement : "Je n'ai pas cette information à ma disposition."  
+                - Ne jamais inventer, extrapoler ou supposer des informations.  
+
+                Le lien pour consulter les services en ligne est :  
+                https://service-public.gouv.tg/service-online
     """
 
         user_message = ChatMessage(role="user", content=rewrited_query)
@@ -228,6 +236,17 @@ if query := st.chat_input("Posez votre question ici..."):
         )
         result = chat_response.choices[0].message.content
         logging.info(f"Réponse du LLM: {result}")
+        
+
+        # 🔹 Vérification anti-hallucination
+        if needs_rag:
+            # Vérifier que la réponse contient bien du contexte
+            if not any(doc["text"][:50] in result for doc in retrieved_docs):
+                result = "Je n'ai pas cette information dans ma base de données."
+        else:
+            # Vérifier que la réponse n'est pas trop longue ou hors-sujet
+            if len(result.split()) > 50:  # max ~2 phrases
+                result = "Je n'ai pas cette information à ma disposition."
 
         interaction_id = str(uuid.uuid4())
 
