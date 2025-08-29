@@ -10,7 +10,7 @@ FAISS_INDEX_FILE = os.path.join(VECTOR_DB_DIR, "faiss_index.idx")
 DOCUMENT_CHUNKS_FILE = os.path.join(VECTOR_DB_DIR, "document_chunks.pkl")
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 mistral_client = MistralClient(api_key = MISTRAL_API_KEY)
-EMBEDDING_MODEL    = "sentence-transformers/all-mpnet-base-v2"
+EMBEDDING_MODEL    = "mistral-embed"  #"sentence-transformers/all-mpnet-base-v2"
 EMBEDDING_BATCH_SIZE = 32
 LLM_MODEL = "mistral-small"
 IMAGE_PATH = "Armoiries_du_Togo.png"

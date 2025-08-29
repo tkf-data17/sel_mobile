@@ -61,12 +61,12 @@ def build_index(ALL_CHUNKS_PATH):
       chunks = load_all_chunks(ALL_CHUNKS_PATH)
       if not chunks:
           logging.warning("Aucun document fourni pour construire l'index.")
-          return
+          return None, None
       # 2. Générer les embeddings
       embeddings =_generate_embeddings(chunks, mistral_client)
       if embeddings is None:
           logging.error("Aucun embedding n'a pu être généré. L'index ne peut pas être construit.")
-          return
+          return None, None
 
       # 3. Créer l'index Faiss optimisé pour la similarité cosinus
       dimension = embeddings.shape[1]
@@ -90,6 +90,7 @@ def build_index(ALL_CHUNKS_PATH):
           print("Index et chunks sauvegardés avec succès.")
       except Exception as e:
           logging.error(f"Erreur lors de la sauvegarde de l'index/chunks: {e}")
+    
 
       return index, chunks
 

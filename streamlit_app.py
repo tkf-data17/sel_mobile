@@ -61,6 +61,7 @@ chunks_recharges = load_chunks()
 mistral_client = get_mistral_client()
 embedding = get_generate_embeddings()
 index, chunks = get_build_index()
+
 # nlp = spacy.load("fr_core_news_sm")
 
 # # Lemmatisation de la question
