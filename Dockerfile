@@ -1,15 +1,13 @@
 FROM python:3.12
 
-WORKDIR /02_RAG_SEL_V_Mobile
+WORKDIR /app
 
-# Copie uniquement requirements.txt pour profiter du cache
+# Copier requirements et mettre pip à jour
 COPY requirements.txt .
-
-# Installe les dépendances (caché si requirements.txt n’a pas changé)
+RUN python -m pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-
-# copier notre projet dans l'image de python
+# Copier le reste du projet
 COPY . .
 
 # Installer le modèle spaCy français
@@ -17,4 +15,4 @@ RUN python -m spacy download fr_core_news_sm
 
 EXPOSE 8501
 
-CMD ["streamlit", "run", "streamlit_app.py","--server.port=8501", "--server.address=0.0.0.0" ]
+CMD ["streamlit", "run", "streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]

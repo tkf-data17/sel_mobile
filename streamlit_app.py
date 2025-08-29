@@ -5,7 +5,7 @@ from typing import Optional
 import numpy as np
 import uuid
 from streamlit_feedback import streamlit_feedback
-import spacy
+# import spacy
 
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
@@ -61,18 +61,18 @@ chunks_recharges = load_chunks()
 mistral_client = get_mistral_client()
 embedding = get_generate_embeddings()
 index, chunks = get_build_index()
-nlp = spacy.load("fr_core_news_sm")
+# nlp = spacy.load("fr_core_news_sm")
 
-# Lemmatisation de la question
-def lemmatize_question(question: str) -> str:
-    """
-    Lemmatisation d'une question en français.
-    Renvoie la question reconstruite avec les lemmes des mots.
-    """
-    doc = nlp(question)
-    # On ignore les espaces et ponctuations inutiles
-    lemmatized = [token.lemma_ for token in doc if not token.is_punct and not token.is_space]
-    return " ".join(lemmatized)
+# # Lemmatisation de la question
+# def lemmatize_question(question: str) -> str:
+#     """
+#     Lemmatisation d'une question en français.
+#     Renvoie la question reconstruite avec les lemmes des mots.
+#     """
+#     doc = nlp(question)
+#     # On ignore les espaces et ponctuations inutiles
+#     lemmatized = [token.lemma_ for token in doc if not token.is_punct and not token.is_space]
+#     return " ".join(lemmatized)
 
 
 #------------------------------------------------------------------------------------------------
@@ -158,10 +158,10 @@ if query := st.chat_input("Posez votre question ici..."):
             rewrited_query = rewrite_question(query, st.session_state.messages)
 
             # Lemmatisation de la question
-            lemmatized_query = lemmatize_question(rewrited_query)
+            # lemmatized_query = lemmatize_question(rewrited_query)
 
             # recherche de documents
-            retrieved_docs = search(lemmatized_query, min_score=0.80)
+            retrieved_docs = search(rewrited_query, min_score=0.80)
                 # Préparer le contexte pour le LLM
             context_str = "\n\n---\n\n".join([
                 f"Source: {doc['metadata'].get('source', 'Inconnue')} (Score: {doc['score']:.4f})\nContenu: {doc['text']}"

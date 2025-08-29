@@ -1,7 +1,8 @@
 langchain
 sentence-transformers
 transformers
-torch==2.2.2+cpu --extra-index-url https://download.pytorch.org/whl/cpu
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.2.2+cpu
 faiss-cpu
 pypdf
 beautifulsoup4
