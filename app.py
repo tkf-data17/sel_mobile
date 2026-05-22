@@ -7,8 +7,7 @@ import uuid
 from streamlit_feedback import streamlit_feedback
 # import spacy
 
-from mistralai.client import MistralClient
-from mistralai.models.chat_completion import ChatMessage
+from mistralai import Mistral
 
 from config import MISTRAL_API_KEY
 from manage_store import get_store_manager
@@ -71,7 +70,7 @@ def get_mistral_client():
         st.error("Erreur: La clé API Mistral (MISTRAL_API_KEY) n'est pas configurée.")
         st.stop()
     logging.info("Initialisation du client Mistral...")
-    return MistralClient(api_key=MISTRAL_API_KEY)
+    return Mistral(api_key=MISTRAL_API_KEY)
 
 mistral_client = get_mistral_client()
 
@@ -246,12 +245,13 @@ if query := st.chat_input("Posez votre question ici..."):
                     https://service-public.gouv.tg/service-online
         """
 
-            user_message = ChatMessage(role="user", content=rewrited_query)
-            system_message = ChatMessage(role="system", content=system_prompt)
-            messages_for_api = [system_message, user_message]
+            messages_for_api = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": rewrited_query}
+            ]
 
             # 3. Appel à l'API Mistral Chat en STREAMING
-            stream_response = mistral_client.chat_stream(
+            stream_response = mistral_client.chat.stream(
                 model="mistral-small",
                 messages=messages_for_api,
                 temperature=temperature,
@@ -262,7 +262,7 @@ if query := st.chat_input("Posez votre question ici..."):
             
             # 4. Boucle de lecture du flux et mise à jour en temps réel
             for chunk in stream_response:
-                 chunk_content = chunk.choices[0].delta.content
+                 chunk_content = chunk.data.choices[0].delta.content
                  if chunk_content:
                      full_response += chunk_content
                      # Mise à jour avec le style CSS + curseur

@@ -3,11 +3,8 @@ import logging
 from typing import Tuple, Dict, List, Optional
 from config import *
 from manage_store import get_store_manager
-from mistralai.client import MistralClient
-from mistralai.models.chat_completion import ChatMessage
+from mistralai Mistral
 
-
-# FONCTION POUR UNE CLASSIFICATION DES REQUETES
 
 def classify_with_llm(query: str, history: Optional[List[Dict[str, str]]] = None) -> Tuple[bool, str]:
         """
@@ -73,16 +70,13 @@ Réponse: RAG - Demande implicite sur le coût du passeport (contexte)
 """
 
             messages = [
-                ChatMessage(role="system", content=system_prompt),
-                ChatMessage(role="user", content=query)
-            ]
-
-            response = mistral_client.chat(
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": query}
+            ]onse = mistral_client.chat.complete(
                 model="mistral-small",
                 messages=messages,
                 temperature=0.1,  # Température basse pour des réponses cohérentes
-                max_tokens=50  # pour avoir une reponse courte et ne pas laisser le llm faire des discours inutile
-            )
+                max_tokens=50  # pour avoi
 
             result = response.choices[0].message.content.strip()
 
@@ -144,14 +138,12 @@ def rewrite_question(user_question: str, conversation_history: List[Dict], max_h
     try:
 
 
-        user_message = ChatMessage(role="user", content=user_question)
-        system_message = ChatMessage(role="system", content=system_prompt)
-        messages_for_api = [system_message, user_message]
+        messages_for_api = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_question}
+        ]
 
-        # 3. Appel à l'API Mistral Chat
-
-        resp = mistral_client.chat(
-            model="mistral-small",
+        Aistrat="mistral-small",
             messages=messages_for_api,
             temperature=0.2,
             # max_tokens=1024
@@ -159,7 +151,6 @@ def rewrite_question(user_question: str, conversation_history: List[Dict], max_h
         result = resp.choices[0].message.content
 
 
-        return result
     except Exception as e:
         logging.error("Erreur rewrite_question: %s", e)
         return user_question
@@ -222,17 +213,15 @@ Si la question concerne des informations spécifiques aux services en ligne du g
 N'inventez pas d'informations sur le gouvernement togolais.
 """
 
-    user_message = ChatMessage(role="user", content=query)
-    system_message = ChatMessage(role="system", content=system_prompt)
-    messages_for_api = [system_message, user_message]
+    messages_for_api = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": query}
+    ]
 
     # 3. Appel à l'API Mistral Chat
 
-    chat_response = mistral_client.chat(
-        model="mistral-small",
-        messages=messages_for_api,
-        temperature=0.5,
-        # max_tokens=1024
+
+
     )
     result = chat_response.choices[0].message.content
 

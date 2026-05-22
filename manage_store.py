@@ -6,7 +6,7 @@ import faiss
 import logging
 import pickle
 import os
-from mistralai.client import MistralClient
+from mistralai import Mistral
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -26,7 +26,7 @@ class VectorStoreManager:
     def _initialize(self):
         """Initialize the Mistral client and try to load data."""
         if MISTRAL_API_KEY:
-            self.mistral_client = MistralClient(api_key=MISTRAL_API_KEY)
+            self.mistral_client = Mistral(api_key=MISTRAL_API_KEY)
         else:
             logging.error("MISTRAL_API_KEY is missing in config.")
         
@@ -70,9 +70,9 @@ class VectorStoreManager:
             batch_texts = texts[i:i + EMBEDDING_BATCH_SIZE]
             try:
                 # logging.info(f"Generating embeddings batch {i//EMBEDDING_BATCH_SIZE + 1}/{total_batches}")
-                response = self.mistral_client.embeddings(
+                response = self.mistral_client.embeddings.create(
                     model=EMBEDDING_MODEL,
-                    input=batch_texts
+                    inputs=batch_texts
                 )
                 batch_embeddings = [data.embedding for data in response.data]
                 all_embeddings.extend(batch_embeddings)
@@ -147,9 +147,9 @@ class VectorStoreManager:
         # logging.info(f"Searching for: '{query_text}'")
         try:
             # Generate query embedding
-            response = self.mistral_client.embeddings(
+            response = self.mistral_client.embeddings.create(
                 model=EMBEDDING_MODEL,
-                input=[query_text]
+                inputs=[query_text]
             )
             query_embedding = np.array([response.data[0].embedding]).astype('float32')
             faiss.normalize_L2(query_embedding)
