@@ -3,7 +3,7 @@ import logging
 from typing import Tuple, Dict, List, Optional
 from config import *
 from manage_store import get_store_manager
-from mistralai Mistral
+from mistralai import Mistral
 
 
 def classify_with_llm(query: str, history: Optional[List[Dict[str, str]]] = None) -> Tuple[bool, str]:
@@ -72,11 +72,12 @@ Réponse: RAG - Demande implicite sur le coût du passeport (contexte)
             messages = [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": query}
-            ]onse = mistral_client.chat.complete(
+            ]
+            response = mistral_client.chat.complete(
                 model="mistral-small",
                 messages=messages,
                 temperature=0.1,  # Température basse pour des réponses cohérentes
-                max_tokens=50  # pour avoi
+            )
 
             result = response.choices[0].message.content.strip()
 
@@ -143,10 +144,10 @@ def rewrite_question(user_question: str, conversation_history: List[Dict], max_h
             {"role": "user", "content": user_question}
         ]
 
-        Aistrat="mistral-small",
+        resp = mistral_client.chat.complete(
+            model="mistral-small",
             messages=messages_for_api,
             temperature=0.2,
-            # max_tokens=1024
         )
         result = resp.choices[0].message.content
 
@@ -219,10 +220,12 @@ N'inventez pas d'informations sur le gouvernement togolais.
     ]
 
     # 3. Appel à l'API Mistral Chat
-
-
-
+    chat_response = mistral_client.chat.complete(
+        model="mistral-small",
+        messages=messages_for_api,
+        temperature=0.5,
     )
+
     result = chat_response.choices[0].message.content
 
     return result
