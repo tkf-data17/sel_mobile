@@ -7,7 +7,7 @@ import uuid
 from streamlit_feedback import streamlit_feedback
 # import spacy
 
-from mistralai import Mistral
+from mistralai.client import Mistral
 
 from config import MISTRAL_API_KEY
 from manage_store import get_store_manager
@@ -261,15 +261,16 @@ if query := st.chat_input("Posez votre question ici..."):
             full_response = ""
             
             # 4. Boucle de lecture du flux et mise à jour en temps réel
-            for chunk in stream_response:
-                 chunk_content = chunk.data.choices[0].delta.content
-                 if chunk_content:
-                     full_response += chunk_content
-                     # Mise à jour avec le style CSS + curseur
-                     placeholder.markdown(
-                         f"<div class='chat-bubble bot-bubble'>{full_response}▌</div>", 
-                         unsafe_allow_html=True
-                     )
+            with stream_response as event_stream:
+                for chunk in event_stream:
+                    chunk_content = chunk.data.choices[0].delta.content
+                    if chunk_content:
+                        full_response += chunk_content
+                        # Mise à jour avec le style CSS + curseur
+                        placeholder.markdown(
+                            f"<div class='chat-bubble bot-bubble'>{full_response}▌</div>", 
+                            unsafe_allow_html=True
+                        )
 
             result = full_response
             logging.info(f"Réponse du LLM (Streamée): {result}")

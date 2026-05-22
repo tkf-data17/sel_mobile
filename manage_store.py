@@ -6,7 +6,7 @@ import faiss
 import logging
 import pickle
 import os
-from mistralai import Mistral
+from mistralai.client import Mistral
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

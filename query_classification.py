@@ -3,7 +3,7 @@ import logging
 from typing import Tuple, Dict, List, Optional
 from config import *
 from manage_store import get_store_manager
-from mistralai import Mistral
+from mistralai.client import Mistral
 
 
 def classify_with_llm(query: str, history: Optional[List[Dict[str, str]]] = None) -> Tuple[bool, str]:
