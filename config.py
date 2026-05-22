@@ -14,7 +14,7 @@ EMBEDDING_MODEL    = "mistral-embed" #"sentence-transformers/all-mpnet-base-v2"
 EMBEDDING_BATCH_SIZE = 32
 LLM_MODEL = "mistral-7B"
 IMAGE_PATH = "Armoiries_du_Togo.png"
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
 
 
 def get_mistral_client():

@@ -1,15 +1,15 @@
 
 import logging
-from typing import Tuple, Dict, List
+from typing import Tuple, Dict, List, Optional
 from config import *
-from manage_store import search
+from manage_store import get_store_manager
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
-import google.genai as genai
+
 
 # FONCTION POUR UNE CLASSIFICATION DES REQUETES
 
-def classify_with_llm(query: str) -> Tuple[bool, str]:
+def classify_with_llm(query: str, history: Optional[List[Dict[str, str]]] = None) -> Tuple[bool, str]:
         """
         Utilise le LLM pour classifier la requête
 
@@ -20,11 +20,30 @@ def classify_with_llm(query: str) -> Tuple[bool, str]:
             Tuple (besoin_rag, confiance, raison)
         """
         try:
+
+            # Construction de l'historique
+            history_text = ""
+            if history:
+                # On prend les 3 derniers échanges, excluant potentiellement la requête actuelle si elle est déjà dans l'historique
+                # Mais généralement on passe l'historique *précédent*.
+                recent = history[-6:] # Derniers 3 échanges (user+assistant)
+                for msg in recent:
+                    role = msg.get("role", "")
+                    content = msg.get("content", "")
+                    # On évite d'inclure la query actuelle si elle est déjà dans la liste (simple heuristique)
+                    if content != query: 
+                         history_text += f"{role.upper()}: {content}\n"
+
             system_prompt = f"""Vous êtes un classificateur de requêtes pour un assistant virtuel du service en ligne du Gouvenement Togolais.
 Votre tâche est de déterminer si une question nécessite une recherche dans une base de connaissances spécifique au gouvernement.
 
+Utilisez l'historique de la conversation pour comprendre le contexte si la question est ambiguë (ex: "combien ça coûte?" fait référence au sujet précédent).
+
+Historique récent:
+{history_text}
+
 Répondez UNIQUEMENT par "RAG" ou "DIRECT" suivi d'une brève explication:
-- "RAG" si la question porte sur des informations spécifiques sur les documents admnistratifs
+- "RAG" si la question porte sur des informations spécifiques sur les documents admnistratifs (même si implicite via l'historique)
 - "DIRECT" si c'est une question générale, une salutation, ou une question qui ne nécessite pas d'informations spécifiques à la commune.
 
 Exemples:
@@ -48,14 +67,11 @@ Réponse: RAG - Demande d'informations spécifiques aux services en ligne
 
 Question: "Qu'est-ce que l'intelligence artificielle?"
 Réponse: DIRECT - Question générale de connaissance
+
+Question (avec contexte Passeport): "Combien ça coûte ?"
+Réponse: RAG - Demande implicite sur le coût du passeport (contexte)
 """
 
-            messages = [
-                ChatMessage(role="system", content=system_prompt),
-                ChatMessage(role="user", content=query)
-            ]
-
-            #  Fixation de Température
             messages = [
                 ChatMessage(role="system", content=system_prompt),
                 ChatMessage(role="user", content=query)
@@ -116,7 +132,7 @@ def rewrite_question(user_question: str, conversation_history: List[Dict], max_h
         *** Regles importantes ***
         - si l'historique est vide, retourne la question exactement comme elle est;
         - Réponds uniquement par la question reformulée, n'ajoute rien d'autre, pas d'information superflux provenant de tes données personnelles;
-        - Si la question est déjà autonome, la renvoyer telle quelle;
+        - Si la question est déjà autonome ou si elle introduit un NOUVEAU SUJET (ex: passer du passeport au casier judiciaire), ne la mélange pas avec l'ancien sujet. Reformule-la de manière autonome sans mentionner l'ancien sujet;
         - La reponse doit etre OBLIGATOIREMENT EN FRANçAIS, concise et precise.
 
         Réécris la question:
@@ -126,24 +142,27 @@ def rewrite_question(user_question: str, conversation_history: List[Dict], max_h
         """
     )
     try:
-        client = genai.Client(api_key=GEMINI_API_KEY)
-        resp = client.models.generate_content(
-            model="gemini-2.5-flash",  # Remplace par le modèle souhaité
-            contents=system_prompt
+
+
+        user_message = ChatMessage(role="user", content=user_question)
+        system_message = ChatMessage(role="system", content=system_prompt)
+        messages_for_api = [system_message, user_message]
+
+        # 3. Appel à l'API Mistral Chat
+
+        resp = mistral_client.chat(
+            model="mistral-small",
+            messages=messages_for_api,
+            temperature=0.2,
+            # max_tokens=1024
         )
-            # Essayer d'extraire correctement le texte
-        rewritten = None
-        if hasattr(resp, "text") and resp.text:
-            rewritten = resp.text.strip()
-        elif hasattr(resp, "candidates") and resp.candidates:
-            parts = resp.candidates[0].content.parts
-            if parts and hasattr(parts[0], "text"):
-                rewritten = parts[0].text.strip()
-        
-        # Fallback : si pas de texte, renvoyer la question brute
-        if not rewritten:
-            return user_question
-        return rewritten
+        result = resp.choices[0].message.content
+
+
+        return result
+    except Exception as e:
+        logging.error("Erreur rewrite_question: %s", e)
+        return user_question
     except Exception as e:
         logging.error("Erreur rewrite_question: %s", e)
         return user_question
@@ -161,7 +180,8 @@ def answer_question(query):
     if needs_rag:
         logging.info(f"Mode RAG - Recherche de documents pour la question: {query}")
 
-        retrieved_docs = search(query, min_score=0.75)
+        manager = get_store_manager()
+        retrieved_docs = manager.search(query, min_score=0.75)
           # Préparer le contexte pour le LLM
         context_str = "\n\n---\n\n".join([
             f"Source: {doc['metadata'].get('source', 'Inconnue')} (Score: {doc['score']:.4f})\nContenu: {doc['text']}"

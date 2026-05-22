@@ -6,6 +6,7 @@ import sys
 import pandas as pd
 from requests import get
 from urllib.parse import urljoin
+import time
 
 # recuperation des données sur la page principale
 
@@ -115,7 +116,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 def _split_documents_and_chunks(documents):
   text_splitter = RecursiveCharacterTextSplitter(
   chunk_size      = 1500,    # nombre de tokens par chunk
-  chunk_overlap   = 200,    # chevauchement entre les chunks
+  chunk_overlap   = 300,    # chevauchement entre les chunks
   length_function = len,
   separators=[
       "\n\n",
@@ -140,12 +141,18 @@ def _split_documents_and_chunks(documents):
 
     # Enrichit chaque chunk avec des métadonnées supplémentaires
     for i, chunk in enumerate(chunks):
+      title = documents[num].metadata.get("title", "Sans titre").strip()
+      # On injecte le titre au début du texte du chunk pour booster la pertinence thématique
+      enhanced_text = f"DOCUMENT : {title}\n{chunk.page_content}"
+      
       chunk_dict = {
-          "id": f"{doc_counter}_{i}", # Identifiant unique du chunk (doc_index_chunk_index)
-          "text": chunk.page_content,
+          "id": f"{doc_counter}_{i}",
+          "text": enhanced_text,
           "metadata": {
-              "chunk_id_in_doc": i, # Position du chunk dans son document d'origine
-              "start_index": chunk.metadata.get("start_index", -1) # Position de début (en caractères)
+              "title": title,
+              "source": documents[num].metadata.get("source", "N/A"),
+              "chunk_id_in_doc": i,
+              "start_index": chunk.metadata.get("start_index", -1)
           }
       }
       all_chunks.append(chunk_dict)
@@ -171,11 +178,20 @@ def save_all_chunks(all_chunks):
 
 
 def collect_data():
+   start_time = time.time() # Début du chronomètre
+   
    data_list, title_list = collect_data_list()
    documents = buil_documents_from_links(data_list, title_list)
    all_chunks = _split_documents_and_chunks(documents)
    save_all_chunks(all_chunks)
-   print("Collecte de données terminée.")
+   
+   end_time = time.time()  # Fin du chronomètre
+   duration = end_time - start_time
+   
+   minutes = int(duration // 60)
+   seconds = int(duration % 60)
+   
+   print(f"Collecte de données terminée en {minutes} minutes et {seconds} secondes.")
    return data_list, title_list
 
 if __name__ == "__main__":

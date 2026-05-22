@@ -26,17 +26,11 @@ except Exception as e:
 
 HEADER_STYLE = f"""
 <style>
+/* Importation de police Google Fonts (Inter pour un look moderne) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-/* Empêche le layout de devenir trop étroit */
-body {{
-    min-width: unset;
-}}
-
-/* Contenu principal décalé pour le header fixe */
-main[data-testid="stAppViewContainer"] {{
-    background-color: red;  /* noir clair */
-    color: white;  
-    padding-top: 80px;  /* même hauteur que ton header */
+html, body, [class*="css"] {{
+    font-family: 'Inter', sans-serif;
 }}
 
 /* Cache complètement l'entête par défaut de Streamlit */
@@ -50,103 +44,104 @@ header[data-testid="stHeader"] {{
     top: 0;
     left: 0;
     right: 0;
-    margin: 0 auto;
     width: 100%;
-    border-bottom: 0px solid transparent;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
     z-index: 9999;
-    background-color: #FFD700; /* Jaune clair */
-    color: black;
-    padding: 10px;
-    box-sizing: border-box;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%); /* Dégradé Or */
+    color: #1a1a1a;
+    padding: 12px 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    gap: 8px;
+    backdrop-filter: blur(10px); /* Effet de flou moderne */
 }}
 
 /* Zone supérieure : logo + titre */
 .header-top {{
     display: flex;
     align-items: center;
-    margin-top: 10;
-    margin-bottom: 5px;
-    flex-wrap: wrap;
+    justify-content: space-between;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+}}
+
+.logo-container {{
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }}
 
 .header-top img {{
-    height: 50px;
-    margin-right: 10px;
+    height: 48px;
+    width: auto;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    transition: transform 0.3s ease;
+}}
+
+.header-top img:hover {{
+    transform: scale(1.05);
 }}
 
 .header-top h1 {{
-    color: black;
-    font-size: 1.5em;
+    color: #1a1a1a;
+    font-size: 1.5rem;
+    font-weight: 700;
     margin: 0;
-    line-height: 1.2;
+    letter-spacing: -0.5px;
 }}
 
-/* Texte défilant */
+.header-subtitle {{
+    font-size: 0.9rem;
+    font-weight: 500;
+    opacity: 0.8;
+}}
+
+/* Texte défilant (Marquee) amélioré */
 .marquee-container {{
     width: 100%;
     overflow: hidden;
-    height: 24px;
-    background-color: #FFD70020; /* Jaune clair avec transparence */
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 6px 0;
 }}
 
 .marquee-text {{
     display: inline-block;
     white-space: nowrap;
-    padding-left: 100%;
-    animation: scroll-left 40s linear infinite;
+    animation: scroll-left 30s linear infinite;
     font-size: 14px;
-    color: black;
-    font-weight: bold;
-    line-height: 24px;
+    color: #000080;
+    font-weight: 600;
 }}
 
 @keyframes scroll-left {{
-    0% {{ transform: translateX(0%); }}
+    0% {{ transform: translateX(100%); }}
     100% {{ transform: translateX(-100%); }}
 }}
 
-/* Décalage du contenu principal */
+/* Ajustement du container principal pour éviter que le header ne cache le contenu */
 .block-container {{
-    padding-top: 80px;
-    margin-top: 0px;    /*utilisation de l'espace */
+    padding-top: 130px !important;
+    max-width: 1000px;
 }}
 
 /* 📱 Version mobile */
 @media (max-width: 768px) {{
     .fixed-header {{
-        width: 100%;
-        padding: 10px;
-        align-items: center;
-        text-align: left;
-        margin: 0 auto;
-    }}
-    .header-top {{
-        flex-direction: row;
-        align-items: center;
-        gap: 4px;
+        padding: 10px 16px;
     }}
     .header-top img {{
-        height: 50px;
-        margin-right: 8px;
+        height: 40px;
     }}
     .header-top h1 {{
-        font-size: 1.5em;
+        font-size: 1.2rem;
     }}
-    .marquee-text {{
-        font-size: 12px;
+    .header-subtitle {{
+        display: none;
     }}
     .block-container {{
-        padding-top: 100px;
-    }}
-    .chat-bubble {{
-        max-width: 95%;
-        font-size: 16px;
+        padding-top: 140px !important;
     }}
 }}
 
@@ -154,13 +149,17 @@ header[data-testid="stHeader"] {{
 
 <div class="fixed-header">
     <div class="header-top">
-        <img src="{image_src}" alt="Armoiries du Togo">
-        <h1>📚SEL - TG</h1>
+        <div class="logo-container">
+            <img src="{image_src}" alt="Armoiries du Togo">
+            <div>
+                <h1>SEL - TG 🇹🇬</h1>
+                <span class="header-subtitle">Service En Ligne - Administration Togolaise</span>
+            </div>
+        </div>
     </div>
     <div class="marquee-container">
         <div class="marquee-text">
-            🔔 Hello, Renseigne-toi sur les procédures (Délai de traitement, Coût, Validité, Pièces à fournir, etc.) d'obtention des documents administratifs du Togo ! 🇹🇬
-            🔔 Hello, Renseigne-toi sur les procédures (Délai de traitement, Coût, Validité, Pièces à fournir, etc.) d'obtention des documents administratifs du Togo ! 🇹🇬
+            🔔 Bienvenue ! Renseignez-vous facilement sur les procédures administratives (Passeport, Nationalité, Casier Judiciaire, etc.) • Service officiel d'information 🇹🇬
         </div>
     </div>
 </div>
@@ -168,44 +167,81 @@ header[data-testid="stHeader"] {{
 
 CHAT_STYLE = f"""
 <style>
-/* Bulles de chat */
-.chat-bubble {{
-    border-radius: 18px;
-    padding: 10px 15px;
-    margin-top: 10px;
-    margin: 8px 0;
-    max-width: 70%;
-    word-wrap: break-word;
-    font-size: 15px;
-    line-height: 1.4;
+/* Conteneur global */
+.stChatFloatingInputContainer {{
+    background: white !important;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
 }}
 
-.chat-container {{
-    margin-top: 40px; /* décale tous les messages sous l’entête */
+/* Bulles de chat communes */
+.chat-bubble {{
+    border-radius: 16px;
+    padding: 10px 14px; /* Padding réduit (était 12px 18px) */
+    margin: 4px 0;      /* Marge verticale réduite (était 8px 0) */
+    max-width: 75%;
+    width: fit-content;
+    word-wrap: break-word;
+    font-size: 15px;
+    line-height: 1.4;   /* Interligne réduit (était 1.5) */
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    animation: fadeIn 0.3s ease;
+    position: relative;
+}}
+
+@keyframes fadeIn {{
+    from {{ opacity: 0; transform: translateY(10px); }}
+    to {{ opacity: 1; transform: translateY(0); }}
 }}
 
 /* Messages utilisateur */
 .user-bubble {{
-    background-color: #FFD700;  /* Jaune clair */
-    color: black;
-    margin-left: auto;            /* Aligne à droite */
-    text-align: right;
+    background-color: #FFD700;  /* Jaune or (couleur du drapeau) */
+    color: #1a1a1a;
+    margin-left: auto;
+    margin-right: 0;
+    border-bottom-right-radius: 4px;
+    text-align: left; /* Meilleure lisibilité */
+    font-weight: 500;
 }}
 
 /* Messages assistant */
 .bot-bubble {{
-    background-color: green;
+    background-color: #006a4e; /* Vert Togo */
     color: white;
-    margin-right: auto;           /* Aligne à gauche */
-    text-align: left;
+    margin-right: auto;
+    margin-left: 0;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,106,78,0.15);
+}}
+
+/* Liens dans les messages du bot */
+.bot-bubble a {{
+    color: #FFD700 !important;
+    text-decoration: underline;
+    font-weight: bold;
+}}
+.bot-bubble a:hover {{
+    color: #ffffff !important;
+}}
+
+/* Listes dans les messages */
+.bot-bubble ul, .bot-bubble ol {{
+    margin-left: 20px;
+    margin-top: 4px;    /* Réduit (était 8px) */
+    margin-bottom: 4px; /* Réduit (était 8px) */
+}}
+
+/* Titres dans les messages */
+.bot-bubble h3, .bot-bubble strong {{
+    color: #FFD700;
+    font-weight: 700;
 }}
 
 /* 📱 Adaptation mobile */
 @media (max-width: 768px) {{
     .chat-bubble {{
-        margin-top: 4px;
-        max-width: 95%;  /* Presque toute la largeur */
-        font-size: 16px; /* Texte un peu plus gros */
+        max-width: 90%;
+        font-size: 15px;
     }}
 }}
 </style>
@@ -221,46 +257,88 @@ with open(logo_path, "rb") as f:
 
 BODY_STYLE = f"""
 <style>
+/* Réduire l'espacement vertical global entre les éléments Streamlit */
+div[data-testid="stVerticalBlock"] > div {{
+    gap: 0.5rem !important; /* Force un écart plus petit entre les blocs (défaut ~1rem) */
+}}
+div[class*="stMarkdown"] {{
+    margin-bottom: -5px; /* Remonte légèrement les blocs markdown */
+}}
+
 /* Fond global de l'application */
-body, .stApp, main[data-testid="stAppViewContainer"] {{
-    background-color: white !important; /*#1e1e1e*/
-    color: black !important;
+.stApp {{
+    background-color: #f8f9fa !important; /* Gris très clair pour le fond */
 }}
 
 /* Zone de saisie du chat */
 div[data-testid="stBottomBlockContainer"] {{
-    background-color: white !important;
+    background-color: #f8f9fa !important;
+    padding-bottom: 20px;
+    border-top: 1px solid rgba(0,0,0,0.05);
 }}
 
-/* Filigrane logo depuis fichier local */
+/* Input du chat */
+.stChatInputContainer textarea {{
+    border-radius: 12px !important;
+    border: 1px solid #e0e0e0 !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05) !important;
+    font-family: 'Inter', sans-serif;
+}}
+.stChatInputContainer textarea:focus {{
+    border-color: #006a4e !important;
+    box-shadow: 0 0 0 2px rgba(0,106,78,0.2) !important;
+}}
+
+/* Filigrane logo */
 .stApp::before {{
     content: "";
     position: fixed;
-    top: 50%;
+    top: 55%;
     left: 50%;
-    width: 250px;
-    height: 250px;
+    width: 400px;
+    height: 400px;
     background: url("data:image/png;base64,{encoded_logo}") no-repeat center;
     background-size: contain;
-    opacity: 0.25;
+    opacity: 0.08; /* Très subtil */
     pointer-events: none;
     transform: translate(-50%, -50%);
-    z-index: 0; /* bien derrière tout le contenu */
+    z-index: 0; 
+    filter: grayscale(100%); /* Plus élégant en gris */
 }}
 
-/* Supprimer l'entête Streamlit par défaut */
-header[data-testid="stHeader"] {{
-    display: none;
+/* Sidebar styling */
+[data-testid="stSidebar"] {{
+    background-color: #ffffff;
+    border-right: 1px solid rgba(0,0,0,0.05);
+}}
+
+[data-testid="stSidebar"] h1 {{
+    color: #006a4e;
+    font-size: 1.4rem;
+    font-weight: 700;
 }}
 </style>
 """
 
 FEEDBACK_STYLE = """
 <style>
-/* Limiter la largeur du feedback */
+/* Limiter la largeur du feedback et le rendre discret */
 .feedback-wrapper {
-    max-width: 60px; /* ou la largeur que tu veux */
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-top: 4px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+.feedback-wrapper:hover {
+    opacity: 1;
+}
+/* Cibler les boutons de feedback streamlit pour les rendre plus petits */
+[data-testid="stThumbSentiment"] button {
+    border: none;
+    background: transparent;
+    padding: 0 4px;
 }
 </style>
 """

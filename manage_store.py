@@ -1,189 +1,191 @@
 from config import *
 import json
-from typing import List, Dict, Tuple, Optional
+from typing import List, Dict, Optional
 import numpy as np
 import faiss
 import logging
 import pickle
+import os
+from mistralai.client import MistralClient
 
-# FONCTION POUR RECHARCHER LES CHUNKS
-def load_all_chunks(CHUNKS_PATH):
+# Configure logging
+logging.basicConfig(level=logging.INFO)
 
-  # Lire le fichier JSON et charger les données
-  with open(CHUNKS_PATH, "r", encoding="utf-8") as f:
-      chunks_recharges = json.load(f)
+class VectorStoreManager:
+    _instance = None
 
-  # Vérification
-  print(f"{len(chunks_recharges)} chunks ont été rechargés avec succès.")
-  return chunks_recharges
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(VectorStoreManager, cls).__new__(cls)
+            cls._instance.index = None
+            cls._instance.chunks = None
+            cls._instance.mistral_client = None
+            cls._instance._initialize()
+        return cls._instance
 
-# FONCTION POUR GENERER LES EMBEDDINGS
+    def _initialize(self):
+        """Initialize the Mistral client and try to load data."""
+        if MISTRAL_API_KEY:
+            self.mistral_client = MistralClient(api_key=MISTRAL_API_KEY)
+        else:
+            logging.error("MISTRAL_API_KEY is missing in config.")
+        
+        # Initial load attempt
+        self.load_data()
 
-def _generate_embeddings(chunks: List[Dict[str, any]], mistral_client) -> Optional[np.ndarray]:
-        """Génère les embeddings pour une liste de chunks via l'API Mistral."""
+    def load_data(self):
+        """Load the FAISS index and chunks from disk if they exist."""
+        # Only load if not already loaded to avoid redundant IO
+        if self.index is not None and self.chunks is not None:
+            return
 
-        # logging.info(f"Génération des embeddings pour {len(chunks)} chunks (modèle: {EMBEDDING_MODEL})...")
-        all_embeddings = []
-        total_batches = (len(chunks) + EMBEDDING_BATCH_SIZE - 1) // EMBEDDING_BATCH_SIZE
-
-        for i in range(0, len(chunks), EMBEDDING_BATCH_SIZE):
-            batch_num = (i // EMBEDDING_BATCH_SIZE) + 1
-            batch_chunks = chunks[i:i + EMBEDDING_BATCH_SIZE]
-            texts_to_embed = [chunk["text"] for chunk in batch_chunks]
-            # logging.info(f"  Traitement du lot {batch_num}/{total_batches} ({len(texts_to_embed)} chunks)")
+        if os.path.exists(FAISS_INDEX_FILE) and os.path.exists(DOCUMENT_CHUNKS_FILE):
             try:
-                response = mistral_client.embeddings(
+                logging.info(f"Loading FAISS index from {FAISS_INDEX_FILE}...")
+                self.index = faiss.read_index(FAISS_INDEX_FILE)
+                
+                logging.info(f"Loading chunks from {DOCUMENT_CHUNKS_FILE}...")
+                with open(DOCUMENT_CHUNKS_FILE, 'rb') as f:
+                    self.chunks = pickle.load(f)
+                
+                logging.info(f"Data loaded successfully. {len(self.chunks)} chunks loaded.")
+            except Exception as e:
+                logging.error(f"Error loading data: {e}")
+                self.index = None
+                self.chunks = None
+        else:
+            logging.warning("Index or chunks file not found. Please ensure data is indexed.")
+
+    def _generate_embeddings(self, texts: List[str]) -> Optional[np.ndarray]:
+        """Generate embeddings using Mistral API."""
+        if not self.mistral_client:
+            logging.error("Mistral client not initialized.")
+            return None
+
+        all_embeddings = []
+        # Calculate batches
+        total_batches = (len(texts) + EMBEDDING_BATCH_SIZE - 1) // EMBEDDING_BATCH_SIZE
+
+        for i in range(0, len(texts), EMBEDDING_BATCH_SIZE):
+            batch_texts = texts[i:i + EMBEDDING_BATCH_SIZE]
+            try:
+                # logging.info(f"Generating embeddings batch {i//EMBEDDING_BATCH_SIZE + 1}/{total_batches}")
+                response = self.mistral_client.embeddings(
                     model=EMBEDDING_MODEL,
-                    input=texts_to_embed
+                    input=batch_texts
                 )
                 batch_embeddings = [data.embedding for data in response.data]
                 all_embeddings.extend(batch_embeddings)
-
             except Exception as e:
-              pass
-                # logging.error(f"Erreur inattendue lors de la génération d'embeddings (lot {batch_num}): {e}")
-
+                logging.error(f"Error generating embeddings for batch {i//EMBEDDING_BATCH_SIZE + 1}: {e}")
+        
         if not all_embeddings:
-            #  logging.error("Aucun embedding n'a put être généré.")
-             return None
-
+            return None
+            
         embeddings_array = np.array(all_embeddings).astype('float32')
-        # logging.info(f"Embeddings générés avec succès. Shape: {embeddings_array.shape}")
-        print(f"Embeddings générés avec succès. Shape: {embeddings_array.shape}")
         return embeddings_array
 
+    def build_index(self, chunks_path: str = None):
+        """Build the FAISS index from the chunks JSON file."""
+        path_to_load = chunks_path if chunks_path else ALL_CHUNKS_PATH
+        logging.info(f"Building index from {path_to_load}...")
+        
+        # Load chunks from JSON
+        try:
+             with open(path_to_load, "r", encoding="utf-8") as f:
+                chunks = json.load(f)
+        except Exception as e:
+            logging.error(f"Error loading chunks JSON: {e}")
+            return None, None
 
-# FONCTION POUR CONSTRUIRE L'INDEX FAISS A PARTIR DE DOCUMENTS
+        if not chunks:
+            logging.warning("No chunks found in JSON.")
+            return None, None
 
-def build_index(ALL_CHUNKS_PATH):
-      """Construit l'index Faiss à partir des documents."""
+        texts = [chunk["text"] for chunk in chunks]
+        embeddings = self._generate_embeddings(texts)
+        
+        if embeddings is None:
+            logging.error("Failed to generate embeddings.")
+            return None, None
 
-      chunks = load_all_chunks(ALL_CHUNKS_PATH)
-      if not chunks:
-          logging.warning("Aucun document fourni pour construire l'index.")
-          return None, None
-      # 2. Générer les embeddings
-      embeddings =_generate_embeddings(chunks, mistral_client)
-      if embeddings is None:
-          logging.error("Aucun embedding n'a pu être généré. L'index ne peut pas être construit.")
-          return None, None
+        dimension = embeddings.shape[1]
+        faiss.normalize_L2(embeddings)
+        index = faiss.IndexFlatIP(dimension)
+        index.add(embeddings)
+        
+        # Update internal state
+        self.index = index
+        self.chunks = chunks
+        
+        # Save to disk
+        try:
+            logging.info(f"Saving index to {FAISS_INDEX_FILE}...")
+            faiss.write_index(index, FAISS_INDEX_FILE)
+            logging.info(f"Saving chunks to {DOCUMENT_CHUNKS_FILE}...")
+            with open(DOCUMENT_CHUNKS_FILE, 'wb') as f:
+                pickle.dump(chunks, f)
+            logging.info("Index and chunks saved successfully.")
+        except Exception as e:
+            logging.error(f"Error saving index/chunks: {e}")
 
-      # 3. Créer l'index Faiss optimisé pour la similarité cosinus
-      dimension = embeddings.shape[1]
-      logging.info(f"Création de l'index Faiss optimisé pour la similarité cosinus avec dimension {dimension}...")
-      # Normaliser les embeddings pour la similarité cosinus
-      faiss.normalize_L2(embeddings)
+        return index, chunks
 
-      # Créer un index pour la similarité cosinus (IndexFlatIP = produit scalaire)
-      index = faiss.IndexFlatIP(dimension)
-      index.add(embeddings)
-      logging.info(f"Index Faiss créé avec {index.ntotal} vecteurs.")
+    def search(self, query_text: str, k: int = 5, min_score: float = None) -> List[Dict[str, any]]:
+        """Search for relevant chunks."""
+        # Ensure data is loaded
+        if self.index is None or self.chunks is None:
+            self.load_data()
+            if self.index is None or self.chunks is None:
+                logging.warning("Search impossible: Index not loaded.")
+                return []
 
-      # 4. Sauvegarder l'index et les chunks
-      try:
-          logging.info(f"Sauvegarde de l'index Faiss dans {FAISS_INDEX_FILE}...")
-          faiss.write_index(index, FAISS_INDEX_FILE)
-          logging.info(f"Sauvegarde des chunks dans {DOCUMENT_CHUNKS_FILE}...")
-          with open(DOCUMENT_CHUNKS_FILE, 'wb') as f:
-              pickle.dump(chunks, f)
-          logging.info("Index et chunks sauvegardés avec succès.")
-          print("Index et chunks sauvegardés avec succès.")
-      except Exception as e:
-          logging.error(f"Erreur lors de la sauvegarde de l'index/chunks: {e}")
-    
-
-      return index, chunks
-
-
-# FONCTION POUR RECHERCHER DANS LA BASE DE RECHERCHE
-
-def search(query_text: str, k: int = 5, min_score: float = None) -> List[Dict[str, any]]:
-        """
-        Recherche les k chunks les plus pertinents pour une requête.
-
-        Args:
-            query_text: Texte de la requête
-            k: Nombre de résultats à retourner
-            min_score: Score minimum (entre 0 et 1) pour inclure un résultat
-
-        Returns:
-            Liste des chunks pertinents avec leurs scores
-        """
-        # chargement des index
-        index = faiss.read_index(FAISS_INDEX_FILE)
-        with open(DOCUMENT_CHUNKS_FILE, 'rb') as f:
-            chunks = pickle.load(f)
-
-        if index is None or not chunks:
-            logging.warning("Recherche impossible: l'index Faiss n'est pas chargé ou est vide.")
-            return []
-        if not MISTRAL_API_KEY:
-             logging.error("Recherche impossible: MISTRAL_API_KEY manquante pour générer l'embedding de la requête.")
+        if not self.mistral_client:
+             logging.error("Search impossible: Mistral client not initialized.")
              return []
 
-        logging.info(f"Recherche des {k} chunks les plus pertinents pour: '{query_text}'")
+        # logging.info(f"Searching for: '{query_text}'")
         try:
-            # 1. Générer l'embedding de la requête
-            response = mistral_client.embeddings(
+            # Generate query embedding
+            response = self.mistral_client.embeddings(
                 model=EMBEDDING_MODEL,
-                input=[query_text] # La requête doit être une liste
+                input=[query_text]
             )
             query_embedding = np.array([response.data[0].embedding]).astype('float32')
-
-            # Normaliser l'embedding de la requête pour la similarité cosinus
             faiss.normalize_L2(query_embedding)
 
-            # 2. Rechercher dans l'index Faiss
-            # Pour IndexFlatIP: scores = produit scalaire (plus grand = meilleur)
-            # indices: index des chunks correspondants dans chunks
-            # Demander plus de résultats si un score minimum est spécifié
+            # Search
             search_k = k * 3 if min_score is not None else k
-            scores, indices = index.search(query_embedding, search_k)
+            scores, indices = self.index.search(query_embedding, search_k)
 
-            # 3. Formater les résultats
             results = []
-            if indices.size > 0: # Vérifier s'il y a des résultats
+            if indices.size > 0:
                 for i, idx in enumerate(indices[0]):
-                    if 0 <= idx < len(chunks): # Vérifier la validité de l'index
-                        chunk = chunks[idx]
-                        # Convertir le score en similarité (0-1)
-                        # Pour IndexFlatIP avec vecteurs normalisés, le score est déjà entre -1 et 1
-                        # On le convertit en pourcentage (0-100%)
+                    if 0 <= idx < len(self.chunks):
+                        chunk = self.chunks[idx]
                         raw_score = float(scores[0][i])
                         similarity = raw_score * 100
-
-                        # Filtrer les résultats en fonction du score minimum
-                        # Le min_score est entre 0 et 1, mais similarity est en pourcentage (0-100)
+                        
                         min_score_percent = min_score * 100 if min_score is not None else 0
+                        
                         if min_score is not None and similarity < min_score_percent:
-                            logging.debug(f"Document filtré (score {similarity:.2f}% < minimum {min_score_percent:.2f}%)")
+                            # logging.debug(f"Result filtered: score {similarity} < {min_score_percent}")
                             continue
 
                         results.append({
-                            "score": similarity, # Score de similarité en pourcentage
-                            "raw_score": raw_score, # Score brut pour débogage
+                            "score": similarity,
+                            "raw_score": raw_score,
                             "text": chunk["text"],
-                            "metadata": chunk["metadata"] # Contient source, category, chunk_id_in_doc, start_index etc.
+                            "metadata": chunk.get("metadata", {})
                         })
-                    else:
-                        logging.warning(f"Index Faiss {idx} hors limites (taille des chunks: {len(chunks)}).")
 
-            # Trier par score (similarité la plus élevée en premier)
             results.sort(key=lambda x: x["score"], reverse=True)
-
-            # Limiter au nombre demandé (k) si nécessaire
-            if len(results) > k:
-                results = results[:k]
-
-            if min_score is not None:
-                min_score_percent = min_score * 100
-                logging.info(f"{len(results)} chunks pertinents trouvés (score minimum: {min_score_percent:.2f}%).")
-            else:
-                logging.info(f"{len(results)} chunks pertinents trouvés.")
-
-            return results
+            return results[:k]
 
         except Exception as e:
-            logging.error(f"Erreur inattendue lors de la recherche: {e}")
+            logging.error(f"Error during search: {e}")
             return []
 
+# Helper function to access the singleton
+def get_store_manager():
+    return VectorStoreManager()

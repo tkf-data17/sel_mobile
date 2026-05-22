@@ -9,7 +9,7 @@ beautifulsoup4
 streamlit==1.44.1
 mistralai==0.4.2
 python-dotenv
-google-genai
+
 streamlit-feedback == 0.1.4
 # spacy>=3.6.0
 # https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-3.7.0/fr_core_news_sm-3.7.0-py3-none-any.whl

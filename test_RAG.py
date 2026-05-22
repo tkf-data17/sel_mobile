@@ -3,7 +3,7 @@ from query_classification import *
 # Interagir avec l'assistant
 
 def ask_assistant(query):
-    result = need_rag_or_not(query)
+    result, reason = classify_with_llm(query)
     print(query, "\n", result)
     print("*" * 100)
 
@@ -25,3 +25,7 @@ querys = [
 
 
           ]
+
+if __name__ == "__main__":
+    for q in querys:
+        ask_assistant(q)
