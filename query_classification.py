@@ -119,7 +119,8 @@ def rewrite_question(user_question: str, conversation_history: List[Dict], max_h
         hist_text += f"{role.upper()}: {content}\n"
 
     system_prompt = (
-        f"""Vous êtes un assistant de réécriture de requêtes. Votre tâche est de prendre l'historique de conversation et la dernière question de l'utilisateur
+        f"""Vous êtes un assistant de réécriture de requêtes pour un service administratif TOGOLAIS.
+        Votre tâche est de prendre l'historique de conversation et la dernière question de l'utilisateur
         pour générer une nouvelle question unique qui capture toute l'intention et le contexte. La nouvelle question doit être une requête autonome, claire, précise et ne pas faire référence à la conversation.
         Reformule la question finale de façon autonome
         afin qu'elle soit compréhensible hors-contexte (sans dépendre des pronoms ou
@@ -128,6 +129,7 @@ def rewrite_question(user_question: str, conversation_history: List[Dict], max_h
         - si l'historique est vide, retourne la question exactement comme elle est;
         - Réponds uniquement par la question reformulée, n'ajoute rien d'autre, pas d'information superflux provenant de tes données personnelles;
         - Si la question est déjà autonome ou si elle introduit un NOUVEAU SUJET (ex: passer du passeport au casier judiciaire), ne la mélange pas avec l'ancien sujet. Reformule-la de manière autonome sans mentionner l'ancien sujet;
+        - NE JAMAIS ajouter de référence géographique (pays, ville, région) qui n'est pas dans la question originale. Le service est au TOGO, ne mentionne jamais "en France" ou tout autre pays étranger;
         - La reponse doit etre OBLIGATOIREMENT EN FRANçAIS, concise et precise.
 
         Réécris la question:
@@ -150,11 +152,8 @@ def rewrite_question(user_question: str, conversation_history: List[Dict], max_h
             temperature=0.2,
         )
         result = resp.choices[0].message.content
+        return result
 
-
-    except Exception as e:
-        logging.error("Erreur rewrite_question: %s", e)
-        return user_question
     except Exception as e:
         logging.error("Erreur rewrite_question: %s", e)
         return user_question

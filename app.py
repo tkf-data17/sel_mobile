@@ -305,6 +305,9 @@ if query := st.chat_input("Posez votre question ici..."):
 
         except Exception as e:
             logging.error(f"Erreur dans le chat: {e}")
-        # msg_box.markdown(f"❌ Une erreur{e} s’est produite. Veuillez réessayer.")
+            placeholder.markdown(
+                "<div class=’chat-bubble bot-bubble’>❌ Une erreur s’est produite. Veuillez réessayer.</div>",
+                unsafe_allow_html=True
+            )
     
     # st.write(rewrited_query)
